@@ -146,5 +146,4 @@ public class RedprintItem extends ItemCoFH implements IPlacementItem {
         return useDelegate(stack, context);
     }
     // endregion
-
 }

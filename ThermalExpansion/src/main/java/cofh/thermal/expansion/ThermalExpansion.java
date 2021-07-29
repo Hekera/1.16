@@ -106,9 +106,6 @@ public class ThermalExpansion {
         ScreenManager.registerFactory(DYNAMO_MAGMATIC_CONTAINER, DynamoMagmaticScreen::new);
         ScreenManager.registerFactory(DYNAMO_NUMISMATIC_CONTAINER, DynamoNumismaticScreen::new);
         ScreenManager.registerFactory(DYNAMO_LAPIDARY_CONTAINER, DynamoLapidaryScreen::new);
-
-        //        ScreenManager.registerFactory(DEVICE_FLUID_BUFFER_CONTAINER, DeviceFluidBufferScreen::new);
-        //        ScreenManager.registerFactory(DEVICE_ITEM_BUFFER_CONTAINER, DeviceItemBufferScreen::new);
     }
 
     private void registerRenderLayers() {
@@ -135,9 +132,6 @@ public class ThermalExpansion {
         RenderTypeLookup.setRenderLayer(BLOCKS.get(ID_DYNAMO_MAGMATIC), cutout);
         RenderTypeLookup.setRenderLayer(BLOCKS.get(ID_DYNAMO_NUMISMATIC), cutout);
         RenderTypeLookup.setRenderLayer(BLOCKS.get(ID_DYNAMO_LAPIDARY), cutout);
-
-        //        RenderTypeLookup.setRenderLayer(BLOCKS.get(ID_DEVICE_FLUID_BUFFER), cutout);
-        //        RenderTypeLookup.setRenderLayer(BLOCKS.get(ID_DEVICE_ITEM_BUFFER), cutout);
     }
     // endregion
 }
