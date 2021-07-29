@@ -121,6 +121,7 @@
 
   "info.thermal.redprint.contents": "Contents:",
   "info.thermal.redprint.unknown": "Unknown Data",
+  "info.thermal.redprint.data.EnderFrequency": "Ender Address",
   "info.thermal.redprint.data.RSControl": "Redstone Control",
   "info.thermal.redprint.data.Sides": "Side Configuration",
   "info.thermal.redprint.data.Xfer": "Transfer Control",

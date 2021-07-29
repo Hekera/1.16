@@ -4,6 +4,7 @@ import cofh.core.tileentity.TileCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.BlockHelper;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -16,6 +17,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Set;
 import java.util.UUID;
 
 import static cofh.lib.util.constants.Constants.EMPTY_UUID;
@@ -31,6 +33,8 @@ public class EnderTunnelTile extends TileCoFH {
 
     protected UUID myId = UUID.randomUUID();
     protected UUID targetId = EMPTY_UUID;
+
+    protected Set<LazyOptional<?>> adjCapabilities = new ObjectOpenHashSet<>();
 
     public EnderTunnelTile() {
 
@@ -48,7 +52,6 @@ public class EnderTunnelTile extends TileCoFH {
     public void onLoad() {
 
         super.onLoad();
-
         if (world != null && Utils.isServerWorld(world)) {
             tunnelMap.put(myId, this);
         }
@@ -58,6 +61,12 @@ public class EnderTunnelTile extends TileCoFH {
     public void remove() {
 
         super.remove();
+        tunnelMap.remove(myId);
+
+        for (LazyOptional<?> opt : adjCapabilities) {
+            opt.invalidate();
+        }
+        adjCapabilities.clear();
     }
 
     @Override
@@ -77,7 +86,17 @@ public class EnderTunnelTile extends TileCoFH {
 
     protected void updateFacing() {
 
-        facing = getBlockState().get(FACING_ALL);
+        Direction prevFacing = facing;
+        Direction curFacing = getBlockState().get(FACING_ALL);
+
+        facing = curFacing; // Facing must be updated before invalidation or some things may improperly reacquire.
+
+        if (prevFacing != curFacing) {
+            for (LazyOptional<?> opt : adjCapabilities) {
+                opt.invalidate();
+            }
+            adjCapabilities.clear();
+        }
     }
 
     @Override
@@ -121,7 +140,9 @@ public class EnderTunnelTile extends TileCoFH {
 
         TileEntity adjTile = BlockHelper.getAdjacentTileEntity(this, getFacing());
         if (adjTile != null && !(adjTile instanceof EnderTunnelTile)) {
-            return adjTile.getCapability(cap, getFacing().getOpposite());
+            LazyOptional<T> adjCap = adjTile.getCapability(cap, getFacing().getOpposite());
+            adjCapabilities.add(adjCap);
+            return adjCap;
         }
         return LazyOptional.empty();
     }
@@ -133,7 +154,8 @@ public class EnderTunnelTile extends TileCoFH {
         if (side != null && side.equals(getFacing())) {
             EnderTunnelTile targetTile = tunnelMap.get(targetId);
             if (targetTile != null && !targetTile.isRemoved()) {
-                return targetTile.getRemoteCapability(cap);
+                LazyOptional<T> remCap = targetTile.getRemoteCapability(cap);
+                return remCap;
             }
         }
         return super.getCapability(cap, side);
