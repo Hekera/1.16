@@ -404,6 +404,7 @@ public class TCoreItems {
         registerMachineAugments();
         registerDynamoAugments();
         registerAreaAugments();
+        registerReachAugments();
         registerPotionAugments();
     }
 
@@ -591,6 +592,17 @@ public class TCoreItems {
                         .type(TAG_AUGMENT_TYPE_AREA_EFFECT)
                         .mod(TAG_AUGMENT_RADIUS, 1.0F)
                         .build()).setShowInGroups(getFlag(FLAG_AREA_AUGMENTS)));
+    }
+
+    private static void registerReachAugments() {
+
+        ItemGroup group = THERMAL_ITEMS;
+
+        registerItem("reach_range_augment", () -> new AugmentItem(new Item.Properties().group(group),
+                AugmentDataHelper.builder()
+                        .type(TAG_AUGMENT_TYPE_REACH)
+                        .mod(TAG_AUGMENT_REACH, 0.25F)
+                        .build()).setShowInGroups(getFlag(FLAG_REACH_AUGMENTS)));
     }
 
     private static void registerPotionAugments() {

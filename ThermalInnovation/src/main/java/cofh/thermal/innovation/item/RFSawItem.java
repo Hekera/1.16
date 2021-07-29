@@ -40,6 +40,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -50,6 +51,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
+import static cofh.lib.util.constants.Constants.UUID_AUG_REACH_DISTANCE;
 import static cofh.lib.util.constants.NBTTags.*;
 import static cofh.lib.util.helpers.AugmentableHelper.getPropertyWithDefault;
 import static cofh.lib.util.helpers.AugmentableHelper.setAttributeFromAugmentAdd;
@@ -85,7 +87,7 @@ public class RFSawItem extends EnergyContainerItemAugmentable implements IMultiM
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && hasActiveTag(stack) ? 1F : 0F);
 
         numSlots = () -> ThermalConfig.toolAugments;
-        augValidator = createAllowValidator(TAG_AUGMENT_TYPE_UPGRADE, TAG_AUGMENT_TYPE_RF, TAG_AUGMENT_TYPE_AREA_EFFECT);
+        augValidator = createAllowValidator(TAG_AUGMENT_TYPE_UPGRADE, TAG_AUGMENT_TYPE_RF, TAG_AUGMENT_TYPE_AREA_EFFECT, TAG_AUGMENT_TYPE_REACH);
     }
 
     @Override
@@ -140,6 +142,7 @@ public class RFSawItem extends EnergyContainerItemAugmentable implements IMultiM
         if (slot == EquipmentSlotType.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Tool modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(ATTACK_SPEED_MODIFIER, "Tool modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
+            multimap.put(ForgeMod.REACH_DISTANCE.get(), new AttributeModifier(UUID_AUG_REACH_DISTANCE, "Tool modifier", getReachModifier(stack), AttributeModifier.Operation.MULTIPLY_BASE));
         }
         return multimap;
     }
@@ -214,6 +217,7 @@ public class RFSawItem extends EnergyContainerItemAugmentable implements IMultiM
             return;
         }
         setAttributeFromAugmentAdd(subTag, augmentData, TAG_AUGMENT_RADIUS);
+        setAttributeFromAugmentAdd(subTag, augmentData, TAG_AUGMENT_REACH);
 
         super.setAttributesFromAugment(container, augmentData);
     }
@@ -246,6 +250,11 @@ public class RFSawItem extends EnergyContainerItemAugmentable implements IMultiM
     protected int getRadius(ItemStack stack) {
 
         return (int) getPropertyWithDefault(stack, TAG_AUGMENT_RADIUS, 0.0F);
+    }
+
+    protected float getReachModifier(ItemStack stack) {
+
+        return getPropertyWithDefault(stack, TAG_AUGMENT_REACH, 0.0F);
     }
     // endregion
 
