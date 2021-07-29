@@ -1,0 +1,8 @@
+{
+  "parent": "thermal:block/ender_tunnel",
+  "textures": {
+    "side": "thermal:block/ender/ender_tunnel_side_active",
+    "back": "thermal:block/ender/ender_tunnel_back_active",
+    "face": "thermal:block/ender/ender_tunnel_face_active"
+  }
+}

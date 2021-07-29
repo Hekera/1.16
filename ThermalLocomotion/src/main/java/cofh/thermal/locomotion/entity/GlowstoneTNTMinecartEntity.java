@@ -5,7 +5,6 @@ import cofh.lib.util.AreaUtils;
 import cofh.lib.util.Utils;
 import cofh.thermal.core.entity.projectile.GlowstoneGrenadeEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
@@ -35,7 +34,7 @@ public class GlowstoneTNTMinecartEntity extends AbstractTNTMinecartEntity {
     @Override
     public Block getBlock() {
 
-        return detonated ? Blocks.AIR : BLOCKS.get(ID_GLOWSTONE_TNT);
+        return BLOCKS.get(ID_GLOWSTONE_TNT);
     }
 
     @Override

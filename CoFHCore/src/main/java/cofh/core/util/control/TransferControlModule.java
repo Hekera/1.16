@@ -42,6 +42,17 @@ public class TransferControlModule implements ITransferControllable {
         enableAutoOutput = false;
     }
 
+    // Only ever call this in a constructor!
+    public void initControl(boolean input, boolean output) {
+
+        if (hasTransferIn()) {
+            this.enableAutoInput = input;
+        }
+        if (hasTransferOut()) {
+            this.enableAutoOutput = output;
+        }
+    }
+
     // region NETWORK
     public void readFromBuffer(PacketBuffer buffer) {
 

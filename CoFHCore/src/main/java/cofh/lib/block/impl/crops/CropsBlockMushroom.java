@@ -37,7 +37,7 @@ public class CropsBlockMushroom extends CropsBlockCoFH {
     @Override
     protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
 
-        return state.isIn(Blocks.MYCELIUM);
+        return state.isIn(Blocks.MYCELIUM) || state.isIn(Blocks.PODZOL);
     }
 
     @Override

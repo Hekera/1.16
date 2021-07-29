@@ -43,7 +43,7 @@ public class EnergyCellTile extends CellTileBase implements ITickableTileEntity 
         amountInput = energyStorage.getMaxReceive();
         amountOutput = energyStorage.getMaxExtract();
 
-        transferControl.setControl(false, true);
+        transferControl.initControl(false, true);
 
         addAugmentSlots(storageAugments);
         initHandlers();

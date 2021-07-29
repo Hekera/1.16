@@ -84,6 +84,7 @@ public abstract class AbstractTNTMinecartEntity extends AbstractMinecartEntityCo
 
         double d0 = horizontalMag(this.getMotion());
         if (!source.isFireDamage() && !source.isExplosion() && !(d0 >= (double) 0.01F)) {
+            detonated = true;
             super.killMinecart(source);
             if (!source.isExplosion() && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                 this.entityDropItem(getBlock());

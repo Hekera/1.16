@@ -34,7 +34,7 @@ public class NukeTNTMinecartEntity extends AbstractTNTMinecartEntity {
     @Override
     public Block getBlock() {
 
-        return detonated ? Blocks.AIR : BLOCKS.get(ID_NUKE_TNT);
+        return BLOCKS.get(ID_NUKE_TNT);
     }
 
     @Override

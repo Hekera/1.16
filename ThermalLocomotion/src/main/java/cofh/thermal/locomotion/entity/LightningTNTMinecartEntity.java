@@ -5,7 +5,6 @@ import cofh.lib.util.AreaUtils;
 import cofh.lib.util.Utils;
 import cofh.thermal.core.entity.projectile.LightningGrenadeEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -35,7 +34,7 @@ public class LightningTNTMinecartEntity extends AbstractTNTMinecartEntity {
     @Override
     public Block getBlock() {
 
-        return detonated ? Blocks.AIR : BLOCKS.get(ID_LIGHTNING_TNT);
+        return BLOCKS.get(ID_LIGHTNING_TNT);
     }
 
     @Override

@@ -51,6 +51,8 @@ public class FluidCellTile extends CellTileBase implements ITickableTileEntity {
 
         tankInv.addTank(fluidStorage, StorageGroup.ACCESSIBLE);
 
+        transferControl.initControl(false, true);
+
         addAugmentSlots(storageAugments);
         initHandlers();
     }

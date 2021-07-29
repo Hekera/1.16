@@ -4,7 +4,6 @@ import cofh.lib.entity.AbstractTNTMinecartEntity;
 import cofh.lib.util.Utils;
 import cofh.thermal.core.entity.projectile.EarthGrenadeEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -33,7 +32,7 @@ public class EarthTNTMinecartEntity extends AbstractTNTMinecartEntity {
     @Override
     public Block getBlock() {
 
-        return detonated ? Blocks.AIR : BLOCKS.get(ID_EARTH_TNT);
+        return BLOCKS.get(ID_EARTH_TNT);
     }
 
     @Override
