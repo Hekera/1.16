@@ -1,7 +1,7 @@
 package cofh.thermal.dynamics.init;
 
 import cofh.thermal.dynamics.block.TileBlockEnderTunnel;
-import cofh.thermal.dynamics.tileentity.EnderTunnelTile;
+import cofh.thermal.dynamics.tileentity.ender.EnderTunnelTile;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntityType;

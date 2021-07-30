@@ -53,6 +53,8 @@ public class ArchersParadox {
         EFFECTS.register(modEventBus);
         ENTITIES.register(modEventBus);
 
+        APConfig.register();
+
         APItems.register();
 
         APEffects.register();
@@ -64,7 +66,6 @@ public class ArchersParadox {
     // region INITIALIZATION
     private void commonSetup(final FMLCommonSetupEvent event) {
 
-        APConfig.register();
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {

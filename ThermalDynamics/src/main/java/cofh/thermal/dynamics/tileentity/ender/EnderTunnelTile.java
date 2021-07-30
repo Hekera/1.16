@@ -1,4 +1,4 @@
-package cofh.thermal.dynamics.tileentity;
+package cofh.thermal.dynamics.tileentity.ender;
 
 import cofh.core.tileentity.TileCoFH;
 import cofh.lib.util.Utils;

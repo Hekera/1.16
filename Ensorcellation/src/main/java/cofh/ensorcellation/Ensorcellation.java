@@ -30,6 +30,8 @@ public class Ensorcellation {
 
         ENCHANTMENTS.register(modEventBus);
 
+        EnsorcConfig.register();
+
         EnsorcEnchantments.register();
 
         CoreItems.registerHorseArmorOverrides();
@@ -38,7 +40,6 @@ public class Ensorcellation {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
 
-        EnsorcConfig.register();
     }
 
 }

@@ -97,6 +97,8 @@ public class ThermalCore {
         SOUND_EVENTS.register(modEventBus);
         TILE_ENTITIES.register(modEventBus);
 
+        ThermalConfig.register();
+
         CoreEnchantments.registerHoldingEnchantment();
     }
 
@@ -122,7 +124,7 @@ public class ThermalCore {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
 
-        ThermalConfig.register();
+        ThermalConfig.setup();
 
         event.enqueueWork(TCoreBlocks::setup);
         event.enqueueWork(TCoreItems::setup);

@@ -47,7 +47,7 @@ public class DeviceFisherTile extends DeviceTileBase implements ITickableTileEnt
 
     public static final BiPredicate<ItemStack, List<ItemStack>> AUG_VALIDATOR = createAllowValidator(TAG_AUGMENT_TYPE_UPGRADE, TAG_AUGMENT_TYPE_AREA_EFFECT, TAG_AUGMENT_TYPE_FILTER);
 
-    protected static int timeConstant = 3600;
+    protected static int timeConstant = 4800;
     protected static int minTimeConstant = timeConstant / 20;
     protected static int timeReductionWater = 20;
 

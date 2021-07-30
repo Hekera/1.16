@@ -26,11 +26,16 @@ public class ThermalConfig {
         FMLJavaModLoadingContext.get().getModEventBus().register(ThermalConfig.class);
         registered = true;
 
-        genServerConfig();
         genClientConfig();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientSpec);
+    }
+
+    public static void setup() {
+
+        genServerConfig();
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverSpec);
     }
 
     private ThermalConfig() {
@@ -189,15 +194,15 @@ public class ThermalConfig {
         if (getFlag(ID_DEVICE_TREE_EXTRACTOR).getAsBoolean()) {
             deviceTreeExtractorTimeConstant = SERVER_CONFIG
                     .comment("This sets the base time constant (in ticks) for the Arboreal Extractor.")
-                    .defineInRange("Time Constant", 500, 20, 36000);
+                    .defineInRange("Time Constant", 500, 20, 72000);
         }
         if (getFlag(ID_DEVICE_FISHER).getAsBoolean()) {
             deviceFisherTimeConstant = SERVER_CONFIG
                     .comment("This sets the base time constant (in ticks) for the Aquatic Entangler.")
-                    .defineInRange("Time Constant", 7200, 400, 36000);
+                    .defineInRange("Time Constant", 4800, 400, 72000);
             deviceFisherTimeReductionWater = SERVER_CONFIG
                     .comment("This sets the time constant reduction (in ticks) per nearby Water source block for the Aquatic Entangler.")
-                    .defineInRange("Water Source Time Constant Reduction", 20, 1, 100);
+                    .defineInRange("Water Source Time Constant Reduction", 20, 1, 1000);
         }
 
         SERVER_CONFIG.pop();
