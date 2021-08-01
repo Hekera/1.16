@@ -7,9 +7,9 @@ import net.minecraft.item.ItemStack;
 /**
  * Slot which copies an ItemStack when clicked on, does not decrement the ItemStack on the cursor.
  */
-public class SlotFalseItemBuffer extends SlotFalseCopy {
+public class SlotFalseBuffer extends SlotFalseCopy {
 
-    public SlotFalseItemBuffer(IInventory inventoryIn, int index, int xPosition, int yPosition) {
+    public SlotFalseBuffer(IInventory inventoryIn, int index, int xPosition, int yPosition) {
 
         super(inventoryIn, index, xPosition, yPosition);
     }

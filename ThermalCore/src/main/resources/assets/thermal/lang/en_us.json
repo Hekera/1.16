@@ -121,7 +121,6 @@
 
   "info.thermal.redprint.contents": "Contents:",
   "info.thermal.redprint.unknown": "Unknown Data",
-  "info.thermal.redprint.data.EnderFrequency": "Ender Address",
   "info.thermal.redprint.data.RSControl": "Redstone Control",
   "info.thermal.redprint.data.Sides": "Side Configuration",
   "info.thermal.redprint.data.Xfer": "Transfer Control",
@@ -728,6 +727,13 @@
   "_comment": "========================================================================================================",
   "_comment": "Thermal Dynamics",
   "_comment": "========================================================================================================",
+
+  "block.thermal.logistics_ender_tunnel": "Ender Tunnel",
+  "block.thermal.logistics_fluid_buffer": "Logistical Fluid Buffer",
+  "block.thermal.logistics_item_buffer": "Logistical Item Buffer",
+
+  "item.thermal.ender_tuner": "Ender Tuning Fork",
+  "item.thermal.ender_tuner.desc": "Used to tune various spacetime manipulation devices.",
 
   "_comment": "========================================================================================================",
   "_comment": "Thermal Essentials",

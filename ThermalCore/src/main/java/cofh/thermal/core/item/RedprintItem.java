@@ -1,6 +1,7 @@
 package cofh.thermal.core.item;
 
 import cofh.core.item.ItemCoFH;
+import cofh.core.util.ProxyUtils;
 import cofh.lib.item.IPlacementItem;
 import cofh.lib.util.IConveyableData;
 import cofh.lib.util.Utils;
@@ -31,6 +32,8 @@ public class RedprintItem extends ItemCoFH implements IPlacementItem {
     public RedprintItem(Properties builder) {
 
         super(builder);
+
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("has_data"), ((stack, world, entity) -> stack.hasTag() ? 1F : 0F));
     }
 
     @Override

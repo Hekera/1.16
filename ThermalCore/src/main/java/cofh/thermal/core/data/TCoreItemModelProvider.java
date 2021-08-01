@@ -141,7 +141,7 @@ public class TCoreItemModelProvider extends ItemModelProviderCoFH {
     private void registerTools(DeferredRegisterCoFH<Item> reg) {
 
         handheld(reg.getSup("wrench"), TOOLS);
-        handheld(reg.getSup("redprint"), TOOLS);
+        // handheld(reg.getSup("redprint"), TOOLS);
         // handheld(reg.getSup("xp_crystal"), TOOLS);
         generated(reg.getSup("rf_potato"), TOOLS);
         generated(reg.getSup("lock"), TOOLS);

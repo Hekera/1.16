@@ -8,30 +8,31 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.IntSupplier;
 
 import static cofh.lib.util.constants.Constants.TRUE;
 
 public class SlotCoFH extends Slot {
 
-    protected int slotStackLimit;
+    protected IntSupplier slotStackLimit;
     protected BooleanSupplier enabled = TRUE;
 
     public SlotCoFH(InvWrapperCoFH inventoryIn, int index, int xPosition, int yPosition) {
 
         super(inventoryIn, index, xPosition, yPosition);
-        slotStackLimit = inventoryIn.getSlotLimit(index);
+        slotStackLimit = () -> inventoryIn.getSlotLimit(index);
     }
 
     public SlotCoFH(IInventory inventoryIn, int index, int xPosition, int yPosition) {
 
         super(inventoryIn, index, xPosition, yPosition);
-        slotStackLimit = inventoryIn.getInventoryStackLimit();
+        slotStackLimit = () -> inventoryIn.getInventoryStackLimit();
     }
 
     public SlotCoFH(IInventory inventoryIn, int index, int xPosition, int yPosition, int slotStackLimit) {
 
         super(inventoryIn, index, xPosition, yPosition);
-        this.slotStackLimit = slotStackLimit;
+        this.slotStackLimit = () -> slotStackLimit;
     }
 
     public SlotCoFH setEnabled(BooleanSupplier enabled) {
@@ -43,7 +44,7 @@ public class SlotCoFH extends Slot {
     @Override
     public int getSlotStackLimit() {
 
-        return slotStackLimit;
+        return slotStackLimit.getAsInt();
     }
 
     @Override

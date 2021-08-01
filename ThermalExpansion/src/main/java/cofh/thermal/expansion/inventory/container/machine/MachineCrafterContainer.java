@@ -95,12 +95,6 @@ public class MachineCrafterContainer extends TileContainer {
         slotChangedCraftingGrid();
     }
 
-    @Override
-    protected int getMergeableSlotCount() {
-
-        return baseTile.invSize() - 9 - 1;
-    }
-
     public boolean hasValidRecipe() {
 
         return !craftResult.getStackInSlot(0).isEmpty();
