@@ -2,9 +2,9 @@ package cofh.thermal.dynamics.init;
 
 import cofh.thermal.dynamics.inventory.container.device.DeviceFluidBufferContainer;
 import cofh.thermal.dynamics.inventory.container.device.DeviceItemBufferContainer;
+import cofh.thermal.dynamics.tileentity.ender.EnderTunnelTile;
 import cofh.thermal.dynamics.tileentity.device.DeviceFluidBufferTile;
 import cofh.thermal.dynamics.tileentity.device.DeviceItemBufferTile;
-import cofh.thermal.dynamics.tileentity.device.EnderTunnelTile;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.tileentity.TileEntityType;

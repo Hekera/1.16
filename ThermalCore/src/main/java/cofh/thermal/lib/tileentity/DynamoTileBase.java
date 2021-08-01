@@ -183,7 +183,6 @@ public abstract class DynamoTileBase extends ThermalTileBase implements ITickabl
         facing = getBlockState().get(FACING_ALL);
         updateHandlers();
     }
-
     // endregion
 
     // region GUI

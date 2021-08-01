@@ -42,6 +42,8 @@ public class OMGourd {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
 
+        OMGConfig.register();
+
         OMGBlocks.register();
 
         CoreItems.registerShearsOverride();
@@ -50,8 +52,6 @@ public class OMGourd {
 
     // region INITIALIZATION
     private void commonSetup(final FMLCommonSetupEvent event) {
-
-        OMGConfig.register();
 
         event.enqueueWork(OMGBlocks::setup);
     }

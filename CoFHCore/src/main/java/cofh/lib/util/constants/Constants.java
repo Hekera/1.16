@@ -190,6 +190,8 @@ public class Constants {
     public static final String DAMAGE_ARROW = "arrow";
     public static final String DAMAGE_PLAYER = "player";
 
+    public static final UUID EMPTY_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
     public static final UUID UUID_ARMOR_TOUGHNESS = UUID.fromString("D1ADBCE5-95CE-470C-BF99-6C59843084A2");
 
     public static final UUID UUID_AUG_REACH_DISTANCE = UUID.fromString("D276EF18-48EB-4AE1-A4CB-213DB49448C7");
