@@ -29,6 +29,11 @@ public class InvWrapperCoFH implements IInventory {
         return inventory.getSlotLimit(slot);
     }
 
+    public void onInventoryChange(int slot) {
+
+        inventory.onInventoryChange(slot);
+    }
+
     // region IInventory
     @Override
     public int getSizeInventory() {

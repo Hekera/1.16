@@ -13,4 +13,6 @@ public interface IItemStackAccess {
 
     boolean isEmpty();
 
+    boolean isFull();
+
 }

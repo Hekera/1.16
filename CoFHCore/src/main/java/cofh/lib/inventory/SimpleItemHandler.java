@@ -50,6 +50,16 @@ public class SimpleItemHandler implements IItemHandler {
         return true;
     }
 
+    public boolean isFull() {
+
+        for (ItemStorageCoFH slot : slots) {
+            if (!slot.isFull()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void onInventoryChange(int slot) {
 
         if (tile == null) {

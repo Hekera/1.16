@@ -14,8 +14,6 @@ import static cofh.thermal.dynamics.init.TDynReferences.LOGISTICS_ITEM_BUFFER_CO
 
 public class LogisticsItemBufferContainer extends TileContainer {
 
-    protected boolean showConfigSlots;
-
     public final LogisticsItemBufferTile tile;
 
     public LogisticsItemBufferContainer(int windowId, World world, BlockPos pos, PlayerInventory inventory, PlayerEntity player) {
@@ -26,25 +24,28 @@ public class LogisticsItemBufferContainer extends TileContainer {
 
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 3; ++j) {
-                addSlot(new SlotCoFH(tileInv, j + i * 3, 62 + j * 18, 17 + i * 18).setEnabled(() -> !showConfigSlots));
+                addSlot(new SlotCoFH(tileInv, j + i * 3, 107 + j * 18, 23 + i * 18) {
+
+                    @Override
+                    public void onSlotChanged() {
+
+                        ((InvWrapperCoFH) inventory).onInventoryChange(slotIndex);
+                    }
+                });
             }
         }
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 3; ++j) {
-                addSlot(new SlotFalseBuffer(tileInv, 9 + j + i * 3, 62 + j * 18, 17 + i * 18).setEnabled(() -> showConfigSlots));
+                addSlot(new SlotFalseBuffer(tileInv, 9 + j + i * 3, 17 + j * 18, 23 + i * 18));
             }
         }
         bindPlayerInventory(inventory);
     }
 
-    public void setShowConfigSlots(boolean showConfigSlots) {
+    @Override
+    protected int getPlayerInventoryVerticalOffset() {
 
-        this.showConfigSlots = showConfigSlots;
-    }
-
-    public boolean getShowConfigSlots() {
-
-        return showConfigSlots;
+        return 96;
     }
 
 }

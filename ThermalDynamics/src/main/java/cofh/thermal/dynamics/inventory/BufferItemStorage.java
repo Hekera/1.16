@@ -21,6 +21,12 @@ public class BufferItemStorage extends ItemStorageCoFH {
         validator = (item) -> checkNBT.getAsBoolean() ? itemsEqualWithTags(item, linkedStack.getItemStack()) : itemsEqual(item, linkedStack.getItemStack());
     }
 
+    public BufferItemStorage setCheckNBT(BooleanSupplier checkNBT) {
+
+        this.checkNBT = checkNBT;
+        return this;
+    }
+
     @Override
     public int getSlotLimit(int slot) {
 

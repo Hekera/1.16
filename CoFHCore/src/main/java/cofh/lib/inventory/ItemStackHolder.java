@@ -32,4 +32,10 @@ public class ItemStackHolder implements IItemStackAccess {
         return stack.isEmpty();
     }
 
+    @Override
+    public boolean isFull() {
+
+        return stack.getCount() >= stack.getMaxStackSize();
+    }
+
 }

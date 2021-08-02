@@ -70,6 +70,46 @@ public class BufferItemInv extends SimpleItemInv {
         allHandler = new SimpleItemHandler(tile, slots);
     }
 
+    public boolean isBufferEmpty() {
+
+        for (ItemStorageCoFH slot : bufferSlots) {
+            if (!slot.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isBufferFull() {
+
+        for (ItemStorageCoFH slot : bufferSlots) {
+            if (!slot.isFull()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isConfigEmpty() {
+
+        for (ItemStorageCoFH slot : internalSlots) {
+            if (!slot.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isConfigFull() {
+
+        for (ItemStorageCoFH slot : internalSlots) {
+            if (!slot.isFull()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public List<ItemStorageCoFH> getBufferSlots() {
 
         return bufferSlots;

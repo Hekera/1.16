@@ -3,6 +3,7 @@ package cofh.core.block;
 import cofh.core.util.ProxyUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -33,7 +34,7 @@ public class CarvedPumpkinBlockCoFH extends CarvedPumpkinBlock {
      */
     public static void updatePredicate() {
 
-        IS_PUMPKIN = (state) -> state != null && (state.getBlock() instanceof CarvedPumpkinBlockCoFH);
+        IS_PUMPKIN = (state) -> state != null && (state.isIn(Blocks.CARVED_PUMPKIN) || state.isIn(Blocks.JACK_O_LANTERN) || state.getBlock() instanceof CarvedPumpkinBlockCoFH);
     }
 
     public CarvedPumpkinBlockCoFH(Properties properties) {
