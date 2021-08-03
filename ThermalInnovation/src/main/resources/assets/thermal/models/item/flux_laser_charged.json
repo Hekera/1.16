@@ -1,0 +1,7 @@
+{
+  "parent": "thermal:item/flux_laser",
+  "textures": {
+    "layer1": "thermal:item/tools/flux_laser_empty_1",
+    "layer2": "thermal:item/tools/flux_laser_charged"
+  }
+}

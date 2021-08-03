@@ -1,13 +1,18 @@
 package cofh.thermal.innovation;
 
+import cofh.thermal.innovation.event.InoClientEvents;
 import cofh.thermal.innovation.init.TInoBlocks;
 import cofh.thermal.innovation.init.TInoItems;
+import cofh.core.CoFHCore;
+import cofh.thermal.innovation.network.packet.server.EntityLaserPacket;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import static cofh.lib.util.constants.Constants.PACKET_LASER;
 import static cofh.lib.util.constants.Constants.ID_THERMAL_INNOVATION;
 import static cofh.thermal.core.init.TCoreIDs.ID_CHARGE_BENCH;
 import static cofh.thermal.core.init.TCoreIDs.ID_DEVICE_POTION_DIFFUSER;
@@ -18,6 +23,8 @@ public class ThermalInnovation {
 
     public ThermalInnovation() {
 
+        registerPackets();
+
         setFeatureFlags();
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -27,6 +34,11 @@ public class ThermalInnovation {
 
         TInoBlocks.register();
         TInoItems.register();
+    }
+
+    private void registerPackets() {
+
+        CoFHCore.PACKET_HANDLER.registerPacket(PACKET_LASER, EntityLaserPacket::new);
     }
 
     private void setFeatureFlags() {
@@ -53,6 +65,7 @@ public class ThermalInnovation {
 
     private void clientSetup(final FMLClientSetupEvent event) {
 
+        MinecraftForge.EVENT_BUS.register(InoClientEvents.class);
     }
     // endregion
 }
