@@ -1,6 +1,10 @@
 package cofh.thermal.dynamics;
 
+import cofh.thermal.dynamics.client.gui.logistics.LogisticsItemBufferScreen;
 import cofh.thermal.dynamics.init.TDynBlocks;
+import cofh.thermal.dynamics.init.TDynContainers;
+import cofh.thermal.dynamics.init.TDynItems;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -14,6 +18,7 @@ import static cofh.thermal.core.ThermalCore.BLOCKS;
 import static cofh.thermal.core.init.TCoreIDs.ID_DEVICE_COLLECTOR;
 import static cofh.thermal.core.init.TCoreIDs.ID_DEVICE_NULLIFIER;
 import static cofh.thermal.dynamics.init.TDynIDs.ID_ENDER_TUNNEL;
+import static cofh.thermal.dynamics.init.TDynReferences.LOGISTICS_ITEM_BUFFER_CONTAINER;
 import static cofh.thermal.lib.common.ThermalFlags.FLAG_XP_STORAGE_AUGMENT;
 import static cofh.thermal.lib.common.ThermalFlags.setFlag;
 
@@ -30,6 +35,9 @@ public class ThermalDynamics {
         modEventBus.addListener(this::clientSetup);
 
         TDynBlocks.register();
+        TDynItems.register();
+
+        TDynContainers.register();
     }
 
     private void setFeatureFlags() {
@@ -47,12 +55,17 @@ public class ThermalDynamics {
 
     private void clientSetup(final FMLClientSetupEvent event) {
 
-        // this.registerGuiFactories();
+        this.registerGuiFactories();
         this.registerRenderLayers();
     }
     // endregion
 
     // region HELPERS
+    private void registerGuiFactories() {
+
+        ScreenManager.registerFactory(LOGISTICS_ITEM_BUFFER_CONTAINER, LogisticsItemBufferScreen::new);
+    }
+
     private void registerRenderLayers() {
 
         RenderType cutout = RenderType.getCutout();

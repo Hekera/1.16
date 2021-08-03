@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.event.TickEvent;
@@ -85,8 +86,10 @@ public class AreaEffectEvents {
         if (curHardness <= 0) {
             return;
         }
-        float maxHardness = getMaxHardness(player.world, areaBlocks, curHardness);
+        float areaMod = MathHelper.clamp(1.0F - 0.01F * areaBlocks.size(), 0.1F, 1.0F);
+        event.setNewSpeed(event.getNewSpeed() * areaMod);
 
+        float maxHardness = getMaxHardness(player.world, areaBlocks, curHardness);
         if (maxHardness > curHardness) {
             event.setNewSpeed(event.getNewSpeed() * curHardness / maxHardness);
         }

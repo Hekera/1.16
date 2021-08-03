@@ -33,6 +33,7 @@ public class ThermalConfig {
 
     public static void setup() {
 
+        // This allows flags to be set before the server configuration is generated.
         genServerConfig();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverSpec);

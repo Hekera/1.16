@@ -152,6 +152,12 @@ public class ItemStorageCoFH implements IItemHandler, IItemStackAccess, IResourc
 
         return item.isEmpty();
     }
+
+    @Override
+    public boolean isFull() {
+
+        return item.getCount() >= getCapacity();
+    }
     // endregion
 
     // region IItemHandler

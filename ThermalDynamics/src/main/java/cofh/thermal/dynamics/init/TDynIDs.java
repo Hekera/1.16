@@ -10,12 +10,10 @@ public class TDynIDs {
     public static final String ID_DUCT_ENERGY = "duct_energy";
     // endregion
 
-    // region ENDER
-    public static final String ID_ENDER_TUNNEL = "ender_tunnel";
-    // endregion
+    // region LOGISTICS
+    public static final String ID_LOGISTICS_ITEM_BUFFER = "logistics_item_buffer";
+    public static final String ID_LOGISTICS_FLUID_BUFFER = "logistics_fluid_buffer";
 
-    // region DEVICES
-    public static final String ID_DEVICE_FLUID_BUFFER = "device_fluid_buffer";
-    public static final String ID_DEVICE_ITEM_BUFFER = "device_item_buffer";
+    public static final String ID_ENDER_TUNNEL = "ender_tunnel";
     // endregion
 }

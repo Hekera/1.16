@@ -121,7 +121,6 @@
 
   "info.thermal.redprint.contents": "Contents:",
   "info.thermal.redprint.unknown": "Unknown Data",
-  "info.thermal.redprint.data.EnderFrequency": "Ender Address",
   "info.thermal.redprint.data.RSControl": "Redstone Control",
   "info.thermal.redprint.data.Sides": "Side Configuration",
   "info.thermal.redprint.data.Xfer": "Transfer Control",
@@ -730,6 +729,21 @@
   "_comment": "========================================================================================================",
   "_comment": "Thermal Dynamics",
   "_comment": "========================================================================================================",
+
+  "block.thermal.logistics_ender_tunnel": "Ender Tunnel",
+  "block.thermal.logistics_fluid_buffer": "Logistical Fluid Buffer",
+  "block.thermal.logistics_item_buffer": "Logistical Item Buffer",
+
+  "info.thermal.logistics_item_buffer.0": "Restricts quantity and flow of items.",
+  "info.thermal.logistics_item_buffer.1": "Set desired items and quantities using the left grid.",
+  "info.thermal.logistics_item_buffer.2": "Latch I/O requires all items to be present before extraction is allowed.",
+  "info.thermal.logistics_item_buffer.3": "Very useful for maintaining specific item ratios.",
+
+  "info.thermal.logistics_item_buffer.mode.0": "I/O: Normal",
+  "info.thermal.logistics_item_buffer.mode.1": "I/O: Latch",
+
+  "item.thermal.ender_tuner": "Ender Tuning Fork",
+  "item.thermal.ender_tuner.desc": "Used to tune various spacetime manipulation devices.",
 
   "_comment": "========================================================================================================",
   "_comment": "Thermal Essentials",

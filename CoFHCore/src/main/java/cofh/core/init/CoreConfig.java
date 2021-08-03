@@ -107,8 +107,6 @@ public class CoreConfig {
 
     private static void genClientConfig() {
 
-        System.out.println("Client config gen");
-
         CLIENT_CONFIG.push("Tooltips");
 
         clientEnableEnchantmentDescriptions = CLIENT_CONFIG
