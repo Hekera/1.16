@@ -282,7 +282,7 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
             LivingEntity living = (LivingEntity) target;
             //TODO: change to laser knockback UUID
             living.getAttribute(Attributes.KNOCKBACK_RESISTANCE).applyNonPersistentModifier(new AttributeModifier(Constants.UUID_ENCH_BULWARK_KNOCKBACK_RESISTANCE, "Laser Damage", 1.0D, AttributeModifier.Operation.ADDITION));
-            if (player.world.getGameTime() % ())
+            //if (player.world.getGameTime() % ((int) 10 * getRangedEffectiveness(stack, distance)))
             switch (element) {
                 case "fire":
                     damageSource = damageSource.setFireDamage();
@@ -298,8 +298,8 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
                     living.addPotionEffect(new EffectInstance(CoreReferences.SUNDERED, BASE_EFFECT_DURATION, 0));
                     break;
                 case "lightning":
-                    if (player.world.getGameTime())
-                    living.func_241841_a()
+                    //if (player.world.getGameTime())
+                    //living.func_241841_a()
                     living.addPotionEffect(new EffectInstance(CoreReferences.SHOCKED, BASE_EFFECT_DURATION, 0));
                     break;
             }
