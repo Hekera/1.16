@@ -1,12 +1,15 @@
 package cofh.lib.util;
 
 import cofh.lib.util.helpers.MathHelper;
+import cofh.lib.util.references.CoreReferences;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.EndermanEntity;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
 import net.minecraft.util.EntityPredicates;
@@ -32,6 +35,104 @@ public class AreaUtils {
 
     public static final int HORZ_MAX = 16;
     public static final int VERT_MAX = 8;
+
+    //region EXPERIMENTATION
+
+    public static boolean igniteBlock(Entity user, World world, BlockPos pos, Direction face) {
+        boolean succeeded = false;
+        BlockState state = world.getBlockState(pos);
+
+        if (AreaUtils.isUnlitCampfire(state)) {
+            succeeded |= world.setBlockState(pos, state.with(BlockStateProperties.LIT, true));
+        }
+        if (state.isAir(world, pos)) {
+            if (AbstractFireBlock.canLightBlock(world, pos, face)) {
+                succeeded |= world.setBlockState(pos, AbstractFireBlock.getFireForPlacement(world, pos), 11);
+            }
+        }
+        return succeeded;
+    }
+
+    public static void igniteLiving(LivingEntity target, int duration, int power) {
+        if (target.getFireTimer() < 1) {
+            target.setFire(duration);
+        }
+    }
+
+    public static boolean freezeBlock(Entity user, World world, BlockPos pos, Direction face) {
+        boolean succeeded = false;
+        BlockState state = world.getBlockState(pos);
+        //TODO permanent stuff based on config
+        boolean permanentWater = true;
+        boolean permanentLava = true;
+
+        // CAMPFIRE/FIRE
+        if (AreaUtils.isLitCampfire(state)) {
+            succeeded |= world.setBlockState(pos, state.with(BlockStateProperties.LIT, false));
+        }
+        // SNOW
+        if (world.isAirBlock(pos) && AreaUtils.isValidSnowPosition(world, pos)) {
+            succeeded |= world.setBlockState(pos, SNOW.getDefaultState());
+        }
+        // FIRE
+        if (state.getBlock() == FIRE) {
+            succeeded |= world.setBlockState(pos, AIR.getDefaultState());
+        }
+        // WATER
+        boolean isFull = state.getBlock() == WATER && state.get(FlowingFluidBlock.LEVEL) == 0;
+        if (state.getMaterial() == Material.WATER && isFull && state.isValidPosition(world, pos) && world.placedBlockCollides(state, pos, ISelectionContext.dummy())) {
+            world.setBlockState(pos, permanentWater ? ICE.getDefaultState() : FROSTED_ICE.getDefaultState());
+            if (!permanentWater) {
+                world.getPendingBlockTicks().scheduleTick(pos, FROSTED_ICE, net.minecraft.util.math.MathHelper.nextInt(world.rand, 60, 120));
+            }
+            succeeded = true;
+        }
+        // LAVA
+        isFull = state.getBlock() == LAVA && state.get(FlowingFluidBlock.LEVEL) == 0;
+        if (state.getMaterial() == Material.LAVA && isFull && state.isValidPosition(world, pos) && world.placedBlockCollides(state, pos, ISelectionContext.dummy())) {
+            world.setBlockState(pos, permanentLava ? OBSIDIAN.getDefaultState() : GLOSSED_MAGMA.getDefaultState());
+            if (!permanentLava) {
+                world.getPendingBlockTicks().scheduleTick(pos, GLOSSED_MAGMA, net.minecraft.util.math.MathHelper.nextInt(world.rand, 60, 120));
+            }
+            succeeded = true;
+        }
+        return succeeded;
+    }
+
+    public static void chillLiving(LivingEntity target, int duration, int power) {
+        target.addPotionEffect(new EffectInstance(CHILLED, duration, power));
+    }
+
+    public static boolean breakEarthBlock(Entity user, World world, BlockPos pos, Direction face) {
+        boolean succeeded = false;
+        BlockState state = world.getBlockState(pos);
+        Material material = state.getMaterial();
+        if (material == Material.ROCK || material == Material.EARTH || state.getBlock() instanceof SnowyDirtBlock) {
+            succeeded |= Utils.destroyBlock(world, pos, true, user);
+        }
+        return succeeded;
+    }
+
+    public static void sunderLiving(LivingEntity target, int duration, int power) {
+        target.addPotionEffect(new EffectInstance(SUNDERED, duration, power));
+    }
+
+    public static boolean zapBlock(Entity user, World world, BlockPos pos, Direction face) {
+        boolean succeeded = false;
+        BlockState state = world.getBlockState(pos);
+        if (state.isAir(world, pos)) {
+            if (isValidLightningBoltPosition(world, pos, 1.0F)) {
+                succeeded |= world.setBlockState(pos, LIGHTNING_AIR.getDefaultState());
+            }
+        }
+        return succeeded;
+    }
+
+    public static void shockLiving(LivingEntity target, int duration, int power) {
+        target.addPotionEffect(new EffectInstance(SHOCKED, duration, power));
+    }
+
+    //endregion EXPERIMENTATION
 
     // region BURNING
     public static void igniteNearbyEntities(Entity entity, World worldIn, BlockPos pos, int radius, int duration) {

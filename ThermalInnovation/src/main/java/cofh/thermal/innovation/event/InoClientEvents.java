@@ -1,7 +1,7 @@
 package cofh.thermal.innovation.event;
 
-import cofh.thermal.core.client.renderer.item.LaserRenderType;
-import cofh.thermal.core.client.renderer.item.LaserRenderer;
+import cofh.thermal.innovation.client.renderer.tool.LaserRenderType;
+import cofh.thermal.innovation.client.renderer.tool.LaserRenderer;
 import cofh.thermal.innovation.item.RFLaserItem;
 import cofh.lib.util.helpers.MathHelper;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.Pose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;

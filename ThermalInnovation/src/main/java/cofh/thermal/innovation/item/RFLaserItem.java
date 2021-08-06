@@ -4,18 +4,16 @@ import cofh.core.item.EnergyContainerItemAugmentable;
 import cofh.core.util.ProxyUtils;
 import cofh.core.util.helpers.ChatHelper;
 import cofh.lib.item.IMultiModeItem;
-import cofh.lib.util.AreaUtils;
 import cofh.lib.util.Utils;
 import cofh.lib.util.constants.Constants;
-import cofh.lib.util.references.CoreReferences;
+import cofh.thermal.core.util.Element;
 import cofh.thermal.innovation.network.packet.server.BlockLaserPacket;
 import cofh.thermal.innovation.network.packet.server.EntityLaserPacket;
 import cofh.thermal.lib.common.ThermalConfig;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -26,20 +24,14 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPartEntity;
-import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.UseAction;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
-import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -53,21 +45,16 @@ import static cofh.lib.util.constants.Constants.RGB_DURABILITY_FLUX;
 import static cofh.lib.util.constants.NBTTags.*;
 import static cofh.lib.util.helpers.AugmentableHelper.getPropertyWithDefault;
 import static cofh.lib.util.helpers.AugmentableHelper.setAttributeFromAugmentAdd;
-import static cofh.lib.util.references.CoreReferences.GLOSSED_MAGMA;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
 import static cofh.thermal.lib.common.ThermalAugmentRules.createAllowValidator;
-import static net.minecraft.block.Blocks.*;
-import static cofh.thermal.lib.common.ThermalConfig.permanentLava;
-import static cofh.thermal.lib.common.ThermalConfig.permanentWater;
 
 public class RFLaserItem extends EnergyContainerItemAugmentable implements IMultiModeItem {
 
     protected static final Set<Enchantment> VALID_ENCHANTS = new ObjectOpenHashSet<>();
-    protected static final float BASE_ATTACK = 0.3F;
+    protected static final float RANGED_DAMAGE_MODIFIER = 0.1F;
     protected static final float BASE_RANGE = 16.0F;
     protected static final int BASE_EFFECT_DURATION = 10;
     protected static final int BASE_ENERGY_PER_TICK = 100;
-    protected static final String[] ELEMENTS = {"fire", "ice", "earth", "lightning"};
 
     protected float blockProgress = 0.0F;
     protected BlockPos focusedBlock;
@@ -203,16 +190,15 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
         return -1.8F + getBaseMod(stack) / 10;
     }
 
-    public float getRangedEffectiveness(ItemStack stack, float distance) {
+    public float getEffectiveness(ItemStack stack, float distance) {
         float range = getRange(stack);
         float halfRange = range * 0.5F;
-        return Math.max(0.0F, distance < halfRange ? 1.0F : (range - distance) / halfRange);
+        return Math.max(0.0F, distance < halfRange ? 1.0F : (range - distance) / halfRange) * (2 + getBaseMod(stack));
     }
 
     public float getRangedAttackDamage(ItemStack stack, float distance) {
 
-        float baseDamage = (BASE_ATTACK + getBaseMod(stack) * 0.1F) * (1 + Utils.getItemEnchantmentLevel(Enchantments.POWER, stack) * 0.1F);
-        return Math.max(0.0F, getRangedEffectiveness(stack, distance) * baseDamage);
+        return Math.max(0.0F, getEffectiveness(stack, distance) * RANGED_DAMAGE_MODIFIER);
     }
 
     protected int getEnergyPerTick(ItemStack stack) {
@@ -226,42 +212,35 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
     }
 
     public int getLaserColor(ItemStack stack) {
-        switch (getElement(stack)) {
-            case "fire":
-                return 0xDCA22B;
-            case "ice":
-                return 0x1DB6E4;
-            case "earth":
-                return 0x3B2E28;
-            case "lightning":
-                return 0xF5F258;
-            default:
-                return RGB_DURABILITY_FLUX;
+        Element element = getElement(stack);
+        if (element == null) {
+            return RGB_DURABILITY_FLUX;
         }
+        return element.getLaserColor();
     }
 
-    public String getElement(ItemStack stack) {
+    public Element getElement(ItemStack stack) {
         int elements = (int) getPropertyWithDefault(stack, TAG_AUGMENT_ELEMENTAL, 0.0F);
         int mode = getMode(stack);
         if (mode <= 0) {
-            return "none";
+            return null;
         }
-        for (int i = 0; i < ELEMENTS.length; i++) {
+        for (int i = 0; i < Element.values().length; i++) {
             if ((elements >> i & 1) > 0) {
                 if (mode <= 1) {
-                    return ELEMENTS[i];
+                    return Element.values()[i];
                 }
                 else {
                     mode--;
                 }
             }
         }
-        return "none";
+        return null;
     }
 
     public void attackRanged(ItemStack stack, PlayerEntity player, Entity target, float distance, float damageMultiplier, boolean attackNearby) {
         blockProgress = 0.0F;
-        String element = getElement(stack);
+        Element element = getElement(stack);
 
         float damage = this.getRangedAttackDamage(stack, distance) * damageMultiplier;
 
@@ -283,33 +262,16 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
             //TODO: change to laser knockback UUID
             living.getAttribute(Attributes.KNOCKBACK_RESISTANCE).applyNonPersistentModifier(new AttributeModifier(Constants.UUID_ENCH_BULWARK_KNOCKBACK_RESISTANCE, "Laser Damage", 1.0D, AttributeModifier.Operation.ADDITION));
             //if (player.world.getGameTime() % ((int) 10 * getRangedEffectiveness(stack, distance)))
-            switch (element) {
-                case "fire":
-                    damageSource = damageSource.setFireDamage();
-                    if (living.getFireTimer() < 1) {
-                        living.setFire(BASE_EFFECT_DURATION);
-                    }
-                    break;
-                case "ice":
-                    living.addPotionEffect(new EffectInstance(CoreReferences.CHILLED, BASE_EFFECT_DURATION, 0));
-                    living.addPotionEffect(new EffectInstance(Effects.SLOWNESS, BASE_EFFECT_DURATION, 0));
-                    break;
-                case "earth":
-                    living.addPotionEffect(new EffectInstance(CoreReferences.SUNDERED, BASE_EFFECT_DURATION, 0));
-                    break;
-                case "lightning":
-                    //if (player.world.getGameTime())
-                    //living.func_241841_a()
-                    living.addPotionEffect(new EffectInstance(CoreReferences.SHOCKED, BASE_EFFECT_DURATION, 0));
-                    break;
+            if (element != null) {
+                element.getEffectApplier().applyEffect(living, BASE_EFFECT_DURATION, 0);
             }
         }
 
-        if (!(element.equals("lightning") && target instanceof LivingEntity && ((LivingEntity) target).isPotionActive(LIGHTNING_RESISTANCE))) {
+        if (!(element == Element.LIGHTNING && target instanceof LivingEntity && ((LivingEntity) target).isPotionActive(LIGHTNING_RESISTANCE))) {
             target.attackEntityFrom(damageSource, damage);
         }
 
-        if (attackNearby && element.equals("lightning")) {
+        if (attackNearby && element == Element.LIGHTNING) {
             Vector3d targetCenter = target.getBoundingBox().getCenter();
             Vector3d range = new Vector3d(4, 4, 4);
             List<Entity> nearbyEntities = player.world.getEntitiesInAABBexcluding(target, new AxisAlignedBB(targetCenter.subtract(range),
@@ -332,19 +294,12 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
         attackRanged(stack, player, target, distance, 1.0F, true);
     }
 
-    public float getBlockProgressAmount(ItemStack stack, float distance) {
-        float baseProgressTick = (2 + getBaseMod(stack)) * getRangedEffectiveness(stack, distance);
-        switch (getElement(stack)) {
-            case "fire":
-                return baseProgressTick * 0.05F;
-            case "ice":
-                return baseProgressTick * 0.09F;
-            case "earth":
-                return baseProgressTick * 0.03F;
-            case "lightning":
-                return baseProgressTick * 0.08F;
+    public float getBlockProgressTick(ItemStack stack, float distance) {
+        Element element = getElement(stack);
+        if (element == null) {
+            return 0.0F;
         }
-        return 0.0F;
+        return element.getLaserProgressModifier() * getEffectiveness(stack, distance);
     }
 
     public void useRanged(ItemStack stack, PlayerEntity player, BlockPos pos, Direction face, float distance) {
@@ -352,7 +307,6 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
         if (!world.isBlockPresent(pos)) {
             return;
         }
-        BlockState state = world.getBlockState(pos);
 
         if (focusedBlock == null || !focusedBlock.equals(pos)) {
             blockProgress = 0.0F;
@@ -360,60 +314,16 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
         }
 
         if (blockProgress < 1.0F) {
-            blockProgress += getBlockProgressAmount(stack, distance);
+            blockProgress += getBlockProgressTick(stack, distance);
         }
         else {
+            Element element = getElement(stack);
             blockProgress = 0.0F;
-            BlockPos faceOffsetPos = pos.offset(face);
-            switch (getElement(stack)) {
-                case "fire":
-                    if (AreaUtils.isUnlitCampfire(state)) {
-                        world.setBlockState(pos, state.with(BlockStateProperties.LIT, true));
-                    }
-                    else if (AbstractFireBlock.canLightBlock(world, faceOffsetPos, face)) {
-                        BlockState fireState = AbstractFireBlock.getFireForPlacement(world, faceOffsetPos);
-                        world.setBlockState(faceOffsetPos, fireState, 11);
-                    }
-                    break;
-                case "ice":
-                    // CAMPFIRE/FIRE
-                    if (AreaUtils.isLitCampfire(state)) {
-                        world.setBlockState(pos, state.with(BlockStateProperties.LIT, false));
-                    }
-                    // SNOW
-                    if (world.isAirBlock(faceOffsetPos) && AreaUtils.isValidSnowPosition(world, faceOffsetPos)) {
-                        world.setBlockState(faceOffsetPos, SNOW.getDefaultState());
-                    }
-                    // FIRE
-                    if (state.getBlock() == FIRE) {
-                        world.setBlockState(pos, AIR.getDefaultState());
-                    }
-                    // WATER
-                    boolean isFull = state.getBlock() == WATER && state.get(FlowingFluidBlock.LEVEL) == 0;
-                    if (state.getMaterial() == Material.WATER && isFull && state.isValidPosition(world, pos) && world.placedBlockCollides(state, pos, ISelectionContext.dummy())) {
-                        world.setBlockState(pos, permanentWater ? ICE.getDefaultState() : FROSTED_ICE.getDefaultState());
-                        if (!permanentWater) {
-                            world.getPendingBlockTicks().scheduleTick(pos, FROSTED_ICE, MathHelper.nextInt(world.rand, 60, 120));
-                        }
-                    }
-                    // LAVA
-                    isFull = state.getBlock() == LAVA && state.get(FlowingFluidBlock.LEVEL) == 0;
-                    if (state.getMaterial() == Material.LAVA && isFull && state.isValidPosition(world, pos) && world.placedBlockCollides(state, pos, ISelectionContext.dummy())) {
-                        world.setBlockState(pos, permanentLava ? OBSIDIAN.getDefaultState() : GLOSSED_MAGMA.getDefaultState());
-                        if (!permanentLava) {
-                            world.getPendingBlockTicks().scheduleTick(pos, GLOSSED_MAGMA, MathHelper.nextInt(world.rand, 60, 120));
-                        }
-                    }
-                    break;
-                case "earth":
-                    Material material = state.getMaterial();
-                    if (material == Material.ROCK || material == Material.EARTH || state.getBlock() instanceof SnowyDirtBlock) {
-                        Utils.destroyBlock(world, pos, true, player);
-                    }
-                    break;
-                case "lightning":
-                    //TODO: get creative with this
-                    break;
+
+            if (element != null && element != Element.LIGHTNING) { //TODO: get creative with lightning
+                if (!element.getBlockTransformer().transformBlock(player, world, pos, face) && element != Element.EARTH) {
+                    element.getBlockTransformer().transformBlock(player, world, pos.offset(face), face);
+                }
             }
         }
     }
@@ -441,8 +351,13 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
             return;
         }
         player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.PLAYERS, 0.4F, 1.0F - 0.1F * getMode(stack));
-
-        ChatHelper.sendIndexedChatMessageToPlayer(player, new TranslationTextComponent("info.cofh." + getElement(stack) + "_element"));
+        Element element = getElement(stack);
+        if (element == null) {
+            ChatHelper.sendIndexedChatMessageToPlayer(player, new TranslationTextComponent("info.cofh.no_element"));
+        }
+        else {
+            ChatHelper.sendIndexedChatMessageToPlayer(player, new TranslationTextComponent("info.cofh." + element.getId() +"_element"));
+        }
     }
     // endregion
 }

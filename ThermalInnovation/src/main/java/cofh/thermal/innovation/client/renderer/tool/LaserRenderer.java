@@ -1,4 +1,4 @@
-package cofh.thermal.core.client.renderer.item;
+package cofh.thermal.innovation.client.renderer.tool;
 
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.texture.OverlayTexture;

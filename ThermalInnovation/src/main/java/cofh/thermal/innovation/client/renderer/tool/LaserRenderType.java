@@ -1,4 +1,4 @@
-package cofh.thermal.core.client.renderer.item;
+package cofh.thermal.innovation.client.renderer.tool;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
