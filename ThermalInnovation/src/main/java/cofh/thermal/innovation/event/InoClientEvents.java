@@ -50,31 +50,39 @@ public class InoClientEvents {
     static void renderLaserHelper(RenderWorldLastEvent event, ClientPlayerEntity player, PlayerEntity otherPlayer, Hand hand) {
         Minecraft instance = Minecraft.getInstance();
         float ticks = instance.getRenderPartialTicks();
+        boolean isFirstPerson = instance.gameSettings.getPointOfView().func_243192_a();
         ItemStack stack = otherPlayer.getActiveItemStack();
-        float range = ((RFLaserItem) stack.getItem()).getRange(stack);
+        RFLaserItem item = (RFLaserItem) stack.getItem();
+        float range = item.getRange(stack);
+        int color = item.getLaserColor(stack);
+        float r = (color >> 16 & 255) * 0.0039215F;
+        float g = (color >> 8 & 255) * 0.0039215F;
+        float b = (color & 255) * 0.0039215F;
         Vector3d cameraPosOffset = otherPlayer.getEyePosition(ticks).subtract(instance.gameRenderer.getActiveRenderInfo().getProjectedView());
 
         MatrixStack matrix = event.getMatrixStack();
         matrix.push();
-        matrix.translate(cameraPosOffset.getX(), cameraPosOffset.length() > 0.5F ? cameraPosOffset.getY() : 0, cameraPosOffset.getZ());
+        matrix.translate(cameraPosOffset.getX(), isFirstPerson ? 0 : cameraPosOffset.getY(), cameraPosOffset.getZ());
         matrix.rotate(Vector3f.YP.rotationDegrees(MathHelper.interpolate(-otherPlayer.rotationYaw, -otherPlayer.prevRotationYaw, ticks)));
         matrix.rotate(Vector3f.XP.rotationDegrees(MathHelper.interpolate(otherPlayer.rotationPitch, otherPlayer.rotationPitch, ticks)));
 
         Vector4f startPoint4f;
         Vector4f endPoint4f = new Vector4f(0, 0, range, 1.0F);
-        if (otherPlayer.equals(player) && cameraPosOffset.length() < 0.5F) {
-            adjustBobbing(player, matrix, ticks, 0.9F);
+        if (otherPlayer.equals(player) && isFirstPerson) {
+            if (instance.gameSettings.viewBobbing)
+                adjustBobbing(player, matrix, ticks, 0.9F, 0.9F);
             HandSide handSide = instance.gameSettings.mainHand;
             handSide = hand == Hand.MAIN_HAND ? handSide : handSide.opposite();
-            Vector3d offset = new Vector3d(0.05F * (handSide == HandSide.LEFT ? 1 : -1), -0.01F, 0.1F);
-            Vector3d movement = new Vector3d((MathHelper.interpolate(player.prevRotationYaw, player.rotationYaw, ticks) - MathHelper.interpolate(player.prevRenderArmYaw, player.renderArmYaw, ticks)) * 0.00023,
-                    (MathHelper.interpolate(player.prevRotationPitch, player.rotationPitch, ticks) - MathHelper.interpolate(player.prevRenderArmPitch, player.renderArmPitch, ticks)) * 0.00016,
-                    (1 - player.getFovModifier()) * 0.1F);
+            Vector3d offset = new Vector3d(0.30F * (handSide == HandSide.LEFT ? 1 : -1), -0.055F, 0.6F);
+            Vector3d movement = new Vector3d((MathHelper.interpolate(player.prevRotationYaw, player.rotationYaw, ticks) - MathHelper.interpolate(player.prevRenderArmYaw, player.renderArmYaw, ticks)) * 0.0012,
+                    (MathHelper.interpolate(player.prevRotationPitch, player.rotationPitch, ticks) - MathHelper.interpolate(player.prevRenderArmPitch, player.renderArmPitch, ticks)) * 0.0008,
+                    (1 - player.getFovModifier()) * 0.5F);
 
             startPoint4f = new Vector4f((float) (offset.getX() + movement.getX()), (float) (offset.getY() + movement.getY()), (float) (offset.getZ() + movement.getZ()), 1.0F);
         }
         else {
-            adjustBobbing(player, matrix, ticks, 1.24F);
+            if (instance.gameSettings.viewBobbing)
+                adjustBobbing(player, matrix, ticks, -1.0F, 1.218F);
             Vector3d offset = new Vector3d(0.25F * (hand == Hand.MAIN_HAND ? -1 : 1), 0, 0.30F);
             startPoint4f = new Vector4f((float) offset.getX(), (float) offset.getY(), (float) offset.getZ(), 1.0F);
         }
@@ -88,17 +96,17 @@ public class InoClientEvents {
         IRenderTypeBuffer.Impl buffer = instance.getRenderTypeBuffers().getBufferSource();
         IVertexBuilder builder = buffer.getBuffer(LaserRenderType.LASER);
 
-        LaserRenderer.renderLaser(startPoint, endPoint, 0.02F, 1.0F, 0.1F, 0.1F, 0.6F, builder);
-        LaserRenderer.renderLaser(startPoint, endPoint, 0.008F, 1.0F, 1.0F, 1.0F, 0.8F, builder);
+        LaserRenderer.renderLaser(startPoint, endPoint, 0.1F, r, g, b, 0.8F, builder);
+        LaserRenderer.renderLaser(startPoint, endPoint, 0.04F, 1.0F, 1.0F, 1.0F, 0.9F, builder);
 
         matrix.pop();
         buffer.finish();
     }
 
-    static void adjustBobbing(PlayerEntity player, MatrixStack matrixStackIn, float partialTicks, float adjustment) {
+    static void adjustBobbing(PlayerEntity player, MatrixStack matrixStackIn, float partialTicks, float xAdjust, float yAdjust) {
         float f1 = -MathHelper.interpolate(player.prevDistanceWalkedModified, player.distanceWalkedModified, 1.0F + partialTicks);
         float f2 = MathHelper.interpolate(player.prevCameraYaw, player.cameraYaw, partialTicks);
-        matrixStackIn.translate(MathHelper.sin(f1 * Math.PI) * f2 * 0.5 * adjustment, Math.abs(MathHelper.cos(f1 * Math.PI) * f2) * adjustment, 0.0D);
+        matrixStackIn.translate(MathHelper.sin(f1 * Math.PI) * f2 * 0.5 * xAdjust, Math.abs(MathHelper.cos(f1 * Math.PI) * f2) * yAdjust, 0.0D);
         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees((float) MathHelper.sin(f1 * Math.PI) * f2 * 3.0F));
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees((float) Math.abs(MathHelper.cos(f1 * Math.PI - 0.2) * f2) * 5.0F));
     }

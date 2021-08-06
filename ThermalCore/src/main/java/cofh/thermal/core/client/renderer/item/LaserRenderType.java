@@ -1,13 +1,9 @@
 package cofh.thermal.core.client.renderer.item;
 
-import net.minecraft.client.renderer.RenderState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
-
-import static cofh.lib.util.constants.Constants.ID_THERMAL;
 
 public class LaserRenderType extends RenderType {
 

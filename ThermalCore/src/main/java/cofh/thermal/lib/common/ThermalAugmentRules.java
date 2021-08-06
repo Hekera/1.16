@@ -38,6 +38,8 @@ public class ThermalAugmentRules {
                 TAG_AUGMENT_RADIUS,
                 TAG_AUGMENT_REACH,
 
+                TAG_AUGMENT_ELEMENTAL,
+
                 TAG_AUGMENT_DYNAMO_POWER,
 
                 TAG_AUGMENT_MACHINE_POWER,
@@ -83,6 +85,7 @@ public class ThermalAugmentRules {
         ATTR_INT.addAll(Arrays.asList(
                 TAG_AUGMENT_DEPTH,
                 TAG_AUGMENT_RADIUS,
+                TAG_AUGMENT_ELEMENTAL,
 
                 TAG_AUGMENT_POTION_AMPLIFIER
         ));

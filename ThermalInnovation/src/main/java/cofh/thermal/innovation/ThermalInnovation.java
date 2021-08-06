@@ -4,6 +4,7 @@ import cofh.thermal.innovation.event.InoClientEvents;
 import cofh.thermal.innovation.init.TInoBlocks;
 import cofh.thermal.innovation.init.TInoItems;
 import cofh.core.CoFHCore;
+import cofh.thermal.innovation.network.packet.server.BlockLaserPacket;
 import cofh.thermal.innovation.network.packet.server.EntityLaserPacket;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -12,8 +13,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-import static cofh.lib.util.constants.Constants.PACKET_LASER;
-import static cofh.lib.util.constants.Constants.ID_THERMAL_INNOVATION;
+import static cofh.lib.util.constants.Constants.*;
 import static cofh.thermal.core.init.TCoreIDs.ID_CHARGE_BENCH;
 import static cofh.thermal.core.init.TCoreIDs.ID_DEVICE_POTION_DIFFUSER;
 import static cofh.thermal.lib.common.ThermalFlags.*;
@@ -38,7 +38,8 @@ public class ThermalInnovation {
 
     private void registerPackets() {
 
-        CoFHCore.PACKET_HANDLER.registerPacket(PACKET_LASER, EntityLaserPacket::new);
+        CoFHCore.PACKET_HANDLER.registerPacket(PACKET_LASER_ENTITY, EntityLaserPacket::new);
+        CoFHCore.PACKET_HANDLER.registerPacket(PACKET_LASER_BLOCK, BlockLaserPacket::new);
     }
 
     private void setFeatureFlags() {
@@ -48,6 +49,7 @@ public class ThermalInnovation {
 
         setFlag(FLAG_POTION_AUGMENTS, true);
         setFlag(FLAG_REACH_AUGMENTS, true);
+        setFlag(FLAG_ELEMENTAL_AUGMENTS, true);
 
         setFlag(FLAG_TOOL_COMPONENTS, true);
 

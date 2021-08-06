@@ -405,6 +405,7 @@ public class TCoreItems {
         registerDynamoAugments();
         registerAreaAugments();
         registerReachAugments();
+        registerElementAugments();
         registerPotionAugments();
     }
 
@@ -603,6 +604,35 @@ public class TCoreItems {
                         .type(TAG_AUGMENT_TYPE_REACH)
                         .mod(TAG_AUGMENT_REACH, 0.25F)
                         .build()).setShowInGroups(getFlag(FLAG_REACH_AUGMENTS)));
+    }
+
+    private static void registerElementAugments() {
+
+        ItemGroup group = THERMAL_ITEMS;
+
+        registerItem("fire_element_augment", () -> new AugmentItem(new Item.Properties().group(group),
+                AugmentDataHelper.builder()
+                        .type(TAG_AUGMENT_TYPE_ELEMENTAL)
+                        .mod(TAG_AUGMENT_ELEMENTAL, 1.0F)
+                        .build()).setShowInGroups(getFlag(FLAG_ELEMENTAL_AUGMENTS)));
+
+        registerItem("ice_element_augment", () -> new AugmentItem(new Item.Properties().group(group),
+                AugmentDataHelper.builder()
+                        .type(TAG_AUGMENT_TYPE_ELEMENTAL)
+                        .mod(TAG_AUGMENT_ELEMENTAL, 2.0F)
+                        .build()).setShowInGroups(getFlag(FLAG_ELEMENTAL_AUGMENTS)));
+
+        registerItem("earth_element_augment", () -> new AugmentItem(new Item.Properties().group(group),
+                AugmentDataHelper.builder()
+                        .type(TAG_AUGMENT_TYPE_ELEMENTAL)
+                        .mod(TAG_AUGMENT_ELEMENTAL, 4.0F)
+                        .build()).setShowInGroups(getFlag(FLAG_ELEMENTAL_AUGMENTS)));
+
+        registerItem("thunder_element_augment", () -> new AugmentItem(new Item.Properties().group(group),
+                AugmentDataHelper.builder()
+                        .type(TAG_AUGMENT_TYPE_ELEMENTAL)
+                        .mod(TAG_AUGMENT_ELEMENTAL, 8.0F)
+                        .build()).setShowInGroups(getFlag(FLAG_ELEMENTAL_AUGMENTS)));
     }
 
     private static void registerPotionAugments() {

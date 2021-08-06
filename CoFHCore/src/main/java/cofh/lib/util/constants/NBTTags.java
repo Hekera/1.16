@@ -107,6 +107,7 @@ public class NBTTags {
     public static final String TAG_AUGMENT_TYPE_DYNAMO = "Dynamo";
     public static final String TAG_AUGMENT_TYPE_AREA_EFFECT = "Area";
     public static final String TAG_AUGMENT_TYPE_REACH = "Reach";
+    public static final String TAG_AUGMENT_TYPE_ELEMENTAL = "Element";
     public static final String TAG_AUGMENT_TYPE_FILTER = "Filter";
     public static final String TAG_AUGMENT_TYPE_POTION = "Potion";
 
@@ -127,6 +128,8 @@ public class NBTTags {
     public static final String TAG_AUGMENT_HARVEST_LEVEL = "Harvest";
     public static final String TAG_AUGMENT_RADIUS = "Radius";
     public static final String TAG_AUGMENT_REACH = "Reach";
+
+    public static final String TAG_AUGMENT_ELEMENTAL = "Element";
 
     public static final String TAG_AUGMENT_FEATURE_CYCLE_PROCESS = "CycProc";
     public static final String TAG_AUGMENT_FEATURE_RS_CONTROL = "RSCtl";
