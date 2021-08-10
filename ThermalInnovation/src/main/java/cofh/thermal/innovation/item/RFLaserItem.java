@@ -4,16 +4,15 @@ import cofh.core.item.EnergyContainerItemAugmentable;
 import cofh.core.util.ProxyUtils;
 import cofh.core.util.helpers.ChatHelper;
 import cofh.lib.item.IMultiModeItem;
+import cofh.lib.util.AreaUtils;
 import cofh.lib.util.Utils;
 import cofh.lib.util.constants.Constants;
-import cofh.thermal.core.util.Element;
 import cofh.thermal.innovation.network.packet.server.BlockLaserPacket;
 import cofh.thermal.innovation.network.packet.server.EntityLaserPacket;
 import cofh.thermal.lib.common.ThermalConfig;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -191,6 +190,7 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
     }
 
     public float getEffectiveness(ItemStack stack, float distance) {
+
         float range = getRange(stack);
         float halfRange = range * 0.5F;
         return Math.max(0.0F, distance < halfRange ? 1.0F : (range - distance) / halfRange) * (2 + getBaseMod(stack));
@@ -212,37 +212,46 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
     }
 
     public int getLaserColor(ItemStack stack) {
-        Element element = getElement(stack);
-        if (element == null) {
-            return RGB_DURABILITY_FLUX;
+
+        switch (getElement(stack).name) {
+            case "fire":
+                return 0xDCA22B;
+            case "ice":
+                return 0x1DB6E4;
+            case "earth":
+                return 0x3B2E28;
+            case "lightning":
+                return 0xF5F258;
+            default:
+                return RGB_DURABILITY_FLUX;
         }
-        return element.getLaserColor();
     }
 
-    public Element getElement(ItemStack stack) {
+    public AreaUtils.Element getElement(ItemStack stack) {
+
         int elements = (int) getPropertyWithDefault(stack, TAG_AUGMENT_ELEMENTAL, 0.0F);
         int mode = getMode(stack);
         if (mode <= 0) {
-            return null;
+            return new AreaUtils.Element("none", null, null);
         }
-        for (int i = 0; i < Element.values().length; i++) {
+        for (int i = 0; i < AreaUtils.ELEMENTS.length; i++) {
             if ((elements >> i & 1) > 0) {
                 if (mode <= 1) {
-                    return Element.values()[i];
+                    return AreaUtils.ELEMENTS[i];
                 }
                 else {
                     mode--;
                 }
             }
         }
-        return null;
+        return new AreaUtils.Element("none", null, null);
     }
 
     public void attackRanged(ItemStack stack, PlayerEntity player, Entity target, float distance, float damageMultiplier, boolean attackNearby) {
-        blockProgress = 0.0F;
-        Element element = getElement(stack);
 
-        float damage = this.getRangedAttackDamage(stack, distance) * damageMultiplier;
+        AreaUtils.Element element = getElement(stack);
+
+        float damage = getRangedAttackDamage(stack, distance) * damageMultiplier;
 
         if (target instanceof EnderDragonPartEntity) {
             target = ((EnderDragonPartEntity) target).getParent();
@@ -259,19 +268,18 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
         DamageSource damageSource = new EntityDamageSource("laser", player);
         if (target instanceof LivingEntity) {
             LivingEntity living = (LivingEntity) target;
-            //TODO: change to laser knockback UUID
-            living.getAttribute(Attributes.KNOCKBACK_RESISTANCE).applyNonPersistentModifier(new AttributeModifier(Constants.UUID_ENCH_BULWARK_KNOCKBACK_RESISTANCE, "Laser Damage", 1.0D, AttributeModifier.Operation.ADDITION));
-            //if (player.world.getGameTime() % ((int) 10 * getRangedEffectiveness(stack, distance)))
-            if (element != null) {
-                element.getEffectApplier().applyEffect(living, BASE_EFFECT_DURATION, 0);
+            living.getAttribute(Attributes.KNOCKBACK_RESISTANCE).applyNonPersistentModifier(new AttributeModifier(Constants.UUID_LASER_KNOCKBACK_RESISTANCE, "Laser Damage", 1.0D, AttributeModifier.Operation.ADDITION));
+
+            if (element.isElement() && player.world.getGameTime() % ((int) (50 / getEffectiveness(stack, distance))) == 0) {
+                element.effectApplier.applyEffect(living, BASE_EFFECT_DURATION, 0);
             }
         }
 
-        if (!(element == Element.LIGHTNING && target instanceof LivingEntity && ((LivingEntity) target).isPotionActive(LIGHTNING_RESISTANCE))) {
+        if (!(element.name.equals("lightning") && target instanceof LivingEntity && ((LivingEntity) target).isPotionActive(LIGHTNING_RESISTANCE))) {
             target.attackEntityFrom(damageSource, damage);
         }
 
-        if (attackNearby && element == Element.LIGHTNING) {
+        if (attackNearby && element.name.equals("lightning")) {
             Vector3d targetCenter = target.getBoundingBox().getCenter();
             Vector3d range = new Vector3d(4, 4, 4);
             List<Entity> nearbyEntities = player.world.getEntitiesInAABBexcluding(target, new AxisAlignedBB(targetCenter.subtract(range),
@@ -285,7 +293,7 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
         }
 
         if (target instanceof LivingEntity) {
-            ((LivingEntity) target).getAttribute(Attributes.KNOCKBACK_RESISTANCE).removeModifier(Constants.UUID_ENCH_BULWARK_KNOCKBACK_RESISTANCE);
+            ((LivingEntity) target).getAttribute(Attributes.KNOCKBACK_RESISTANCE).removeModifier(Constants.UUID_LASER_KNOCKBACK_RESISTANCE);
         }
         target.hurtResistantTime = 10;
     }
@@ -295,14 +303,21 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
     }
 
     public float getBlockProgressTick(ItemStack stack, float distance) {
-        Element element = getElement(stack);
-        if (element == null) {
-            return 0.0F;
+        switch (getElement(stack).name) {
+            case "fire":
+                return getEffectiveness(stack, distance) * 0.05F;
+            case "ice":
+                return getEffectiveness(stack, distance) * 0.09F;
+            case "earth":
+                return getEffectiveness(stack, distance) * 0.03F;
+            case "lightning":
+                return getEffectiveness(stack, distance) * 0.08F;
         }
-        return element.getLaserProgressModifier() * getEffectiveness(stack, distance);
+        return 0.0F;
     }
 
     public void useRanged(ItemStack stack, PlayerEntity player, BlockPos pos, Direction face, float distance) {
+
         World world = player.world;
         if (!world.isBlockPresent(pos)) {
             return;
@@ -317,12 +332,12 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
             blockProgress += getBlockProgressTick(stack, distance);
         }
         else {
-            Element element = getElement(stack);
+            AreaUtils.Element element = getElement(stack);
             blockProgress = 0.0F;
 
-            if (element != null && element != Element.LIGHTNING) { //TODO: get creative with lightning
-                if (!element.getBlockTransformer().transformBlock(player, world, pos, face) && element != Element.EARTH) {
-                    element.getBlockTransformer().transformBlock(player, world, pos.offset(face), face);
+            if (element.isElement() && element.name != "lightning") { //TODO: get creative with lightning
+                if (!element.blockTransformer.transformBlock(player, world, pos, face) && element.name != "earth") {
+                    element.blockTransformer.transformBlock(player, world, pos.offset(face), face);
                 }
             }
         }
@@ -333,6 +348,7 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
     // region IAugmentableItem
     @Override
     public void updateAugmentState(ItemStack container, List<ItemStack> augments) {
+
         super.updateAugmentState(container, augments);
     }
     // endregion
@@ -340,24 +356,21 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
     // region IMultiModeItem
     @Override
     public int getNumModes(ItemStack stack) {
+
         int elements = (int) getPropertyWithDefault(stack, TAG_AUGMENT_ELEMENTAL, 0.0F);
         return 1 + (elements & 1) + (elements >> 1 & 1) + (elements >> 2 & 1) + (elements >> 3 & 1);
     }
 
     @Override
     public void onModeChange(PlayerEntity player, ItemStack stack) {
+
         blockProgress = 0.0F;
         if (getNumModes(stack) <= 1) {
             return;
         }
         player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.PLAYERS, 0.4F, 1.0F - 0.1F * getMode(stack));
-        Element element = getElement(stack);
-        if (element == null) {
-            ChatHelper.sendIndexedChatMessageToPlayer(player, new TranslationTextComponent("info.cofh.no_element"));
-        }
-        else {
-            ChatHelper.sendIndexedChatMessageToPlayer(player, new TranslationTextComponent("info.cofh." + element.getId() +"_element"));
-        }
+
+        ChatHelper.sendIndexedChatMessageToPlayer(player, new TranslationTextComponent("info.cofh." + getElement(stack).name +"_element"));
     }
     // endregion
 }
