@@ -54,8 +54,8 @@ public class GlowstoneGrenadeEntity extends AbstractGrenadeEntity {
 
         if (Utils.isServerWorld(world)) {
             if (!this.isInWater()) {
-                affectNearbyEntities(this, world, this.getPosition(), radius, func_234616_v_());
-                AreaUtils.transformGlowAir(this, world, this.getPosition(), radius);
+                AreaUtils.glowLiving.applyEffectNearby(world, this.getPosition(), radius, effectDuration * 20, 0, func_234616_v_());
+                AreaUtils.glowAirTransform.transformArea(this, world, this.getPosition(), radius);
                 makeAreaOfEffectCloud();
             }
             this.world.setEntityState(this, (byte) 3);

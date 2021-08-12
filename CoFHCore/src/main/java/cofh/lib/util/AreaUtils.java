@@ -4,11 +4,15 @@ import cofh.lib.util.helpers.MathHelper;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.EndermanEntity;
+import net.minecraft.entity.monster.EndermiteEntity;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -36,30 +40,30 @@ public class AreaUtils {
 
     // region ELEMENTAL
 
-    public static final IEffectApplier igniteLiving = (LivingEntity target, int duration, int power) -> {
+    public static final IEffectApplier igniteLiving = (target, duration, power, source) -> {
         target.removePotionEffect(CHILLED);
         if (!target.isImmuneToFire() && !target.isInWater() && target.getFireTimer() <= 0) {
             target.setFire(duration);
         }
     };
 
-    public static final IEffectApplier chillLiving = (LivingEntity target, int duration, int power) -> {
+    public static final IEffectApplier chillLiving = (target, duration, power, source) -> {
         if (target.getFireTimer() > 0) {
             target.forceFireTicks(0);
         }
         target.addPotionEffect(new EffectInstance(CHILLED, duration, power));
     };
 
-    public static final IEffectApplier sunderLiving = (LivingEntity target, int duration, int power) ->
+    public static final IEffectApplier sunderLiving = (target, duration, power, source) ->
         target.addPotionEffect(new EffectInstance(SUNDERED, duration, power));
 
-    public static final IEffectApplier shockLiving = (LivingEntity target, int duration, int power) -> {
+    public static final IEffectApplier shockLiving = (target, duration, power, source) -> {
         if (!target.isPotionActive(LIGHTNING_RESISTANCE)) {
             target.addPotionEffect(new EffectInstance(SHOCKED, duration, power));
         }
     };
 
-    public static final IBlockTransformer fireTransform = (Entity entity, World world, BlockPos pos, Direction face) -> {
+    public static final IBlockTransformer fireTransform = (entity, world, pos, face) -> {
         boolean succeeded = false;
         BlockState state = world.getBlockState(pos);
 
@@ -74,7 +78,7 @@ public class AreaUtils {
         return succeeded;
     };
 
-    public static final IBlockTransformer iceTransform = (Entity entity, World world, BlockPos pos, Direction face) -> {
+    public static final IBlockTransformer iceTransform = (entity, world, pos, face) -> {
         boolean succeeded = false;
         BlockState state = world.getBlockState(pos);
         //TODO permanent stuff based on config
@@ -112,7 +116,7 @@ public class AreaUtils {
         return succeeded;
     };
 
-    public static final IBlockTransformer iceSurfaceTransform = (Entity entity, World world, BlockPos pos, Direction face) -> {
+    public static final IBlockTransformer iceSurfaceTransform = (entity, world, pos, face) -> {
         boolean succeeded = false;
         BlockState state = world.getBlockState(pos);
         //TODO permanent stuff based on config
@@ -144,7 +148,7 @@ public class AreaUtils {
         return succeeded;
     };
 
-    public static final IBlockTransformer earthTransform = (Entity entity, World world, BlockPos pos, Direction face) -> {
+    public static final IBlockTransformer earthTransform = (entity, world, pos, face) -> {
         boolean succeeded = false;
         BlockState state = world.getBlockState(pos);
         Material material = state.getMaterial();
@@ -154,7 +158,7 @@ public class AreaUtils {
         return succeeded;
     };
 
-    public static final IBlockTransformer lightningTransform = (Entity entity, World world, BlockPos pos, Direction face) -> {
+    public static final IBlockTransformer lightningTransform = (entity, world, pos, face) -> {
         boolean succeeded = false;
         BlockState state = world.getBlockState(pos);
         if (state.isAir(world, pos)) {
@@ -177,7 +181,20 @@ public class AreaUtils {
 
     public static final IBlockTransformer signalAirTransform = getConversionTransform(REPLACEABLE_AIR, SIGNAL_AIR.getDefaultState(), false);
     public static final IBlockTransformer glowAirTransform = getConversionTransform(REPLACEABLE_AIR, GLOW_AIR.getDefaultState(), false);
+    public static final IEffectApplier glowLiving = (target, duration, power, source) -> {
+        target.addPotionEffect(new EffectInstance(Effects.GLOWING, duration, power));
+        if (target.getCreatureAttribute() == CreatureAttribute.UNDEAD) {
+            target.attackEntityFrom(DamageSource.causeExplosionDamage(source instanceof LivingEntity ? (LivingEntity) source : null), 4.0F);
+            target.setFire(duration);
+        }
+    };
     public static final IBlockTransformer enderAirTransform = getConversionTransform(REPLACEABLE_AIR, ENDER_AIR.getDefaultState(), false);
+    public static final IEffectApplier enderfereLiving = (target, duration, power, source) -> {
+        if (target instanceof EndermanEntity || target instanceof EndermiteEntity) {
+            target.addPotionEffect(new EffectInstance(ENDERFERENCE, duration, power));
+            target.attackEntityFrom(DamageSource.causeExplosionDamage(source instanceof LivingEntity ? (LivingEntity) source : null), 4.0F);
+        }
+    };
 
     public static final IBlockTransformer myceliumTransform = getConversionTransform(new ObjectOpenHashSet<>(new BlockState[]{DIRT.getDefaultState(), GRASS_BLOCK.getDefaultState()}), MYCELIUM.getDefaultState(), true);
     public static final IBlockTransformer grassTransform = getConversionTransform(DIRT.getDefaultState(), GRASS_BLOCK.getDefaultState(), true);
@@ -221,7 +238,7 @@ public class AreaUtils {
         }
     };
 
-    public static final IBlockTransformer growPlants = (Entity entity, World world, BlockPos pos, Direction face) -> {
+    public static final IBlockTransformer growPlants = (entity, world, pos, face) -> {
 
         BlockState state = world.getBlockState(pos);
         if (state.getBlock() instanceof IGrowable) {
@@ -248,7 +265,7 @@ public class AreaUtils {
 
     private static IBlockTransformer getConversionTransform(Set<BlockState> replaceable, BlockState replacement, boolean requireAir) {
         if (requireAir)
-            return (Entity entity, World worldIn, BlockPos pos, Direction face) -> {
+            return (entity, worldIn, pos, face) -> {
                 BlockPos above = pos.offset(Direction.UP);
                 if (worldIn.getBlockState(above).isAir(worldIn, above) && replaceable.contains(worldIn.getBlockState(pos))) {
                     return worldIn.setBlockState(pos, replacement);
@@ -256,7 +273,7 @@ public class AreaUtils {
                 return false;
             };
         else
-            return (Entity entity, World worldIn, BlockPos pos, Direction face) -> {
+            return (entity, worldIn, pos, face) -> {
                 if (replaceable.contains(worldIn.getBlockState(pos))) {
                     return worldIn.setBlockState(pos, replacement);
                 }
@@ -266,7 +283,7 @@ public class AreaUtils {
 
     private static IBlockTransformer getConversionTransform(BlockState replaceable, BlockState replacement, boolean requireAir) {
         if (requireAir)
-            return (Entity entity, World worldIn, BlockPos pos, Direction face) -> {
+            return (entity, worldIn, pos, face) -> {
                 BlockPos above = pos.offset(Direction.UP);
                 if (worldIn.getBlockState(above).isAir(worldIn, above) && replaceable.equals(worldIn.getBlockState(pos))) {
                     return worldIn.setBlockState(pos, replacement);
@@ -274,7 +291,7 @@ public class AreaUtils {
                 return false;
             };
         else
-            return (Entity entity, World worldIn, BlockPos pos, Direction face) -> {
+            return (entity, worldIn, pos, face) -> {
                 if (replaceable.equals(worldIn.getBlockState(pos))) {
                     return worldIn.setBlockState(pos, replacement);
                 }
@@ -302,22 +319,32 @@ public class AreaUtils {
     // region INTERFACES
 
     public interface IEffectApplier {
-        void applyEffect(LivingEntity target, int duration, int power);
+        void applyEffect(LivingEntity target, int duration, int power, @Nullable Entity source);
 
-        default void applyEffectNearby(World worldIn, BlockPos pos, Predicate<? super LivingEntity> filter, int radius, int duration, int power) {
+        default void applyEffectNearby(World worldIn, BlockPos pos, Predicate<? super LivingEntity> filter, int radius, int duration, int power, @Nullable Entity source) {
 
             AxisAlignedBB area = new AxisAlignedBB(pos.add(-radius, -radius, -radius), pos.add(1 + radius, 1 + radius, 1 + radius));
             worldIn.getEntitiesWithinAABB(LivingEntity.class, area, filter)
-                    .forEach(livingEntity -> livingEntity.addPotionEffect(new EffectInstance(SHOCKED, duration, power, false, false)));
+                    .forEach(livingEntity -> this.applyEffect(livingEntity, duration, power, source));
+        }
+
+        default void applyEffectNearby(World worldIn, BlockPos pos, int radius, int duration, int power, @Nullable Entity source) {
+
+            applyEffectNearby(worldIn, pos, EntityPredicates.IS_ALIVE, radius, duration, power, source);
         }
 
         default void applyEffectNearby(World worldIn, BlockPos pos, int radius, int duration, int power) {
-            applyEffectNearby(worldIn, pos, EntityPredicates.IS_ALIVE, radius, duration, power);
+
+            applyEffectNearby(worldIn, pos, radius, duration, power, null);
         }
     }
 
     public interface IBlockTransformer {
         boolean transformBlock(Entity entity, World world, BlockPos pos, Direction face);
+
+        default void transformArea(Entity entity, World world, BlockPos pos, float radius) {
+            transformArea(entity, world, pos, radius, 1.0F);
+        }
 
         default void transformArea(Entity entity, World world, BlockPos pos, float radius, float chance) {
 
@@ -327,7 +354,7 @@ public class AreaUtils {
 
             for (BlockPos iterPos : BlockPos.getAllInBoxMutable(pos.add(-f, -v, -f), pos.add(f, v, f))) {
                 double distance = iterPos.distanceSq(entity.getPositionVec(), true);
-                if (distance < f2 && world.rand.nextDouble() < chance) {
+                if (distance < f2 && (chance > 0.99999F || world.rand.nextDouble() < chance)) {
                     transformBlock(entity, world, iterPos, Direction.DOWN);
                 }
             }
@@ -347,7 +374,7 @@ public class AreaUtils {
                     return;
                 }
                 double distance = iterPos.distanceSq(entity.getPositionVec(), true);
-                if (distance < f2 && world.rand.nextDouble() < chance && transformBlock(entity, world, iterPos, Direction.DOWN)) {
+                if (distance < f2 && (chance > 0.99999F || world.rand.nextDouble() < chance) && transformBlock(entity, world, iterPos, Direction.DOWN)) {
                    max--;
                 }
             }

@@ -266,18 +266,26 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
 
         target.hurtResistantTime = 0;
         DamageSource damageSource = new EntityDamageSource("laser", player);
+        if (element.name.equals("fire")) {
+            damageSource = damageSource.setFireDamage();
+        }
         if (target instanceof LivingEntity) {
             LivingEntity living = (LivingEntity) target;
             living.getAttribute(Attributes.KNOCKBACK_RESISTANCE).applyNonPersistentModifier(new AttributeModifier(Constants.UUID_LASER_KNOCKBACK_RESISTANCE, "Laser Damage", 1.0D, AttributeModifier.Operation.ADDITION));
 
             if (element.isElement() && player.world.getGameTime() % ((int) (50 / getEffectiveness(stack, distance))) == 0) {
-                element.effectApplier.applyEffect(living, BASE_EFFECT_DURATION, 0);
+                element.effectApplier.applyEffect(living, BASE_EFFECT_DURATION, 0, player);
             }
         }
 
         if (!(element.name.equals("lightning") && target instanceof LivingEntity && ((LivingEntity) target).isPotionActive(LIGHTNING_RESISTANCE))) {
             target.attackEntityFrom(damageSource, damage);
         }
+
+        if (target instanceof LivingEntity) {
+            ((LivingEntity) target).getAttribute(Attributes.KNOCKBACK_RESISTANCE).removeModifier(Constants.UUID_LASER_KNOCKBACK_RESISTANCE);
+        }
+        target.hurtResistantTime = 10;
 
         if (attackNearby && element.name.equals("lightning")) {
             Vector3d targetCenter = target.getBoundingBox().getCenter();
@@ -292,17 +300,15 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
             }
         }
 
-        if (target instanceof LivingEntity) {
-            ((LivingEntity) target).getAttribute(Attributes.KNOCKBACK_RESISTANCE).removeModifier(Constants.UUID_LASER_KNOCKBACK_RESISTANCE);
-        }
-        target.hurtResistantTime = 10;
     }
 
     public void attackRanged(ItemStack stack, PlayerEntity player, Entity target, float distance) {
+
         attackRanged(stack, player, target, distance, 1.0F, true);
     }
 
     public float getBlockProgressTick(ItemStack stack, float distance) {
+
         switch (getElement(stack).name) {
             case "fire":
                 return getEffectiveness(stack, distance) * 0.05F;
