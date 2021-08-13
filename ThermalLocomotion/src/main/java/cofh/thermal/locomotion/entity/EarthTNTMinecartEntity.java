@@ -2,7 +2,7 @@ package cofh.thermal.locomotion.entity;
 
 import cofh.lib.entity.AbstractTNTMinecartEntity;
 import cofh.lib.util.Utils;
-import cofh.thermal.core.entity.projectile.EarthGrenadeEntity;
+//import cofh.thermal.core.entity.projectile.EarthGrenadeEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
@@ -45,8 +45,8 @@ public class EarthTNTMinecartEntity extends AbstractTNTMinecartEntity {
     protected void explode() {
 
         if (Utils.isServerWorld(world)) {
-            EarthGrenadeEntity.sunderNearbyEntities(this, world, this.getPosition(), radius);
-            EarthGrenadeEntity.breakBlocks(this, world, this.getPosition(), radius - 1, null);
+//            EarthGrenadeEntity.sunderNearbyEntities(this, world, this.getPosition(), radius);
+//            EarthGrenadeEntity.breakBlocks(this, world, this.getPosition(), radius - 1, null);
             this.remove();
             this.entityDropItem(getCartItem());
         }

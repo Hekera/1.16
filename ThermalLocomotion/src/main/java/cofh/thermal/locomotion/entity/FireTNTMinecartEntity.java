@@ -3,7 +3,7 @@ package cofh.thermal.locomotion.entity;
 import cofh.lib.entity.AbstractTNTMinecartEntity;
 import cofh.lib.util.AreaUtils;
 import cofh.lib.util.Utils;
-import cofh.thermal.core.entity.projectile.FireGrenadeEntity;
+//import cofh.thermal.core.entity.projectile.FireGrenadeEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EntityType;
@@ -48,7 +48,7 @@ public class FireTNTMinecartEntity extends AbstractTNTMinecartEntity {
 
         if (Utils.isServerWorld(world)) {
             if (!this.isInWater()) {
-                AreaUtils.igniteNearbyEntities(this, world, this.getPosition(), radius, FireGrenadeEntity.effectDuration);
+//                AreaUtils.igniteNearbyEntities(this, world, this.getPosition(), radius, FireGrenadeEntity.effectDuration);
                 AreaUtils.igniteSpecial(this, world, this.getPosition(), radius, true, true, null);
                 AreaUtils.igniteNearbyGround(this, world, this.getPosition(), radius, 0.2);
                 makeAreaOfEffectCloud();

@@ -1,5 +1,6 @@
 package cofh.lib.util;
 
+import cofh.core.network.packet.client.PlayerMotionPacket;
 import cofh.lib.util.helpers.MathHelper;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.*;
@@ -7,17 +8,20 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.EndermiteEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.EntityPredicates;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
@@ -37,6 +41,41 @@ public class AreaUtils {
     public static final int HORZ_MAX = 16;
     public static final int VERT_MAX = 8;
     public static final Set<BlockState> REPLACEABLE_AIR = new ObjectOpenHashSet<>(new BlockState[]{AIR.getDefaultState(), CAVE_AIR.getDefaultState()});
+
+    // region EXPERIMENTAL
+
+    // endregion EXPERIMENTAL
+
+    public static IEffectApplier noEffect = new IEffectApplier() {
+
+        @Override
+        public void applyEffect(LivingEntity target, int duration, int power, @Nullable Entity source) {return;}
+
+        @Override
+        public void applyEffectNearby(World worldIn, BlockPos pos, Predicate<? super LivingEntity> filter, int radius, int duration, int power, @Nullable Entity source) {return;}
+
+        @Override
+        public void applyEffectNearby(World worldIn, BlockPos pos, int radius, int duration, int power, @Nullable Entity source) {return;}
+
+        @Override
+        public void applyEffectNearby(World worldIn, BlockPos pos, int radius, int duration, int power) {return;}
+    };
+
+    public static final IBlockTransformer noTransform = new IBlockTransformer() {
+
+        @Override
+        public boolean transformBlock(Entity entity, World world, BlockPos pos, Direction face) {return false;}
+
+        @Override
+        public void transformArea(Entity entity, World world, BlockPos pos, float radius) {return;}
+
+        @Override
+        public void transformArea(Entity entity, World world, BlockPos pos, float radius, float chance) {return;}
+
+        @Override
+        public void transformArea(Entity entity, World world, BlockPos pos, float radius, float chance, int max) {return;}
+    };
+
 
     // region ELEMENTAL
 
@@ -193,6 +232,47 @@ public class AreaUtils {
         if (target instanceof EndermanEntity || target instanceof EndermiteEntity) {
             target.addPotionEffect(new EffectInstance(ENDERFERENCE, duration, power));
             target.attackEntityFrom(DamageSource.causeExplosionDamage(source instanceof LivingEntity ? (LivingEntity) source : null), 4.0F);
+        }
+    };
+    public static final IEffectApplier slimeLiving = new IEffectApplier() {
+        @Override
+        public void applyEffect(LivingEntity target, int duration, int power, @Nullable Entity source) {
+            target.addPotionEffect(new EffectInstance(SLIMED, duration, power, false, true));
+
+
+        }
+
+        @Override
+        public void applyEffectNearby(World worldIn, BlockPos pos, Predicate<? super LivingEntity> filter, int radius, int duration, int power, @Nullable Entity source) {
+
+            AxisAlignedBB area = new AxisAlignedBB(pos.add(-radius, -radius, -radius), pos.add(1 + radius, 1 + radius, 1 + radius));
+            List<LivingEntity> mobs = worldIn.getEntitiesWithinAABB(LivingEntity.class, area, filter);
+            for (LivingEntity mob : mobs) {
+                applyEffect(mob, duration, power, null);
+
+                if (source != null) {
+                    double d5 = mob.getPosX() - source.getPosX();
+                    double d7 = mob.getPosY() - source.getPosY();
+                    double d9 = mob.getPosZ() - source.getPosZ();
+                    double d13 = net.minecraft.util.math.MathHelper.sqrt(d5 * d5 + d7 * d7 + d9 * d9);
+
+                    if (d13 != 0.0D) {
+                        d5 = d5 / d13;
+                        d7 = d7 / d13;
+                        d9 = d9 / d13;
+                        double d12 = Math.sqrt(source.getDistanceSq(mob) / 32.0D);
+                        double d14 = Explosion.getBlockDensity(source.getPositionVec(), mob);
+                        double d11 = (radius - d12) * d14;
+                        d11 *= (1.0D - mob.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                        if (mob instanceof ServerPlayerEntity) {
+                            d11 /= 4.0D;
+                            PlayerMotionPacket.sendToClient(d5 * d11, d7 * d11, d9 * d11, (ServerPlayerEntity) mob);
+                        } else {
+                            mob.setMotion(mob.getMotion().add(d5 * d11, d7 * d11, d9 * d11));
+                        }
+                    }
+                }
+            }
         }
     };
 

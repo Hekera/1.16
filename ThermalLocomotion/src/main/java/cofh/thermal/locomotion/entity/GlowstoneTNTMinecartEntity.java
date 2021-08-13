@@ -3,7 +3,7 @@ package cofh.thermal.locomotion.entity;
 import cofh.lib.entity.AbstractTNTMinecartEntity;
 import cofh.lib.util.AreaUtils;
 import cofh.lib.util.Utils;
-import cofh.thermal.core.entity.projectile.GlowstoneGrenadeEntity;
+//import cofh.thermal.core.entity.projectile.GlowstoneGrenadeEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EntityType;
@@ -47,8 +47,8 @@ public class GlowstoneTNTMinecartEntity extends AbstractTNTMinecartEntity {
     protected void explode() {
 
         if (Utils.isServerWorld(world)) {
-            GlowstoneGrenadeEntity.affectNearbyEntities(this, world, this.getPosition(), radius, null);
-            AreaUtils.transformGlowAir(this, world, this.getPosition(), radius);
+//            GlowstoneGrenadeEntity.affectNearbyEntities(this, world, this.getPosition(), radius, null);
+//            AreaUtils.transformGlowAir(this, world, this.getPosition(), radius);
             makeAreaOfEffectCloud();
             this.remove();
             this.entityDropItem(getCartItem());

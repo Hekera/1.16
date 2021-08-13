@@ -1,22 +1,13 @@
 package cofh.thermal.core.init;
 
-import cofh.lib.entity.AbstractGrenadeEntity;
-import cofh.lib.util.AreaUtils;
-import cofh.lib.util.Utils;
 import cofh.thermal.core.entity.item.*;
 import cofh.thermal.core.entity.monster.BasalzEntity;
 import cofh.thermal.core.entity.monster.BlitzEntity;
 import cofh.thermal.core.entity.monster.BlizzEntity;
 import cofh.thermal.core.entity.projectile.*;
-import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.gen.Heightmap;
 
 import static cofh.thermal.core.ThermalCore.ENTITIES;
@@ -46,56 +37,16 @@ public class TCoreEntities {
         ENTITIES.register(ID_GLOWSTONE_GRENADE, () -> EntityType.Builder.<GlowstoneGrenadeEntity>create(GlowstoneGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_GLOWSTONE_GRENADE));
         ENTITIES.register(ID_ENDER_GRENADE, () -> EntityType.Builder.<EnderGrenadeEntity>create(EnderGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_ENDER_GRENADE));
 
+
+        ENTITIES.register("grenade", () -> EntityType.Builder.<BaseGrenadeEntity>create(BaseGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build("grenade"));
+
+
         ENTITIES.register(ID_PHYTO_GRENADE, () -> EntityType.Builder.<PhytoGrenadeEntity>create(PhytoGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_PHYTO_GRENADE));
 
         ENTITIES.register(ID_FIRE_GRENADE, () -> EntityType.Builder.<FireGrenadeEntity>create(FireGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_FIRE_GRENADE));
         ENTITIES.register(ID_EARTH_GRENADE, () -> EntityType.Builder.<EarthGrenadeEntity>create(EarthGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_EARTH_GRENADE));
         ENTITIES.register(ID_ICE_GRENADE, () -> EntityType.Builder.<IceGrenadeEntity>create(IceGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_ICE_GRENADE));
         ENTITIES.register(ID_LIGHTNING_GRENADE, () -> EntityType.Builder.<LightningGrenadeEntity>create(LightningGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_LIGHTNING_GRENADE));
-
-//        AbstractGrenadeEntity updraftGrenade = new AbstractGrenadeEntity(, null) {
-//            public int effectDuration = 15;
-//
-//            @Override
-//            protected Item getDefaultItem() {
-//
-//                return FIRE_GRENADE_ITEM;
-//            }
-//
-//            @Override
-//            protected void onImpact(RayTraceResult result) {
-//
-//                if (Utils.isServerWorld(world)) {
-//                    if (!this.isInWater()) {
-//                        AreaUtils.igniteNearbyEntities(this, world, this.getPosition(), radius, effectDuration);
-//                        AreaUtils.igniteSpecial(this, world, this.getPosition(), radius, true, true, func_234616_v_());
-//                        AreaUtils.igniteNearbyGround(this, world, this.getPosition(), radius, 0.2);
-//                        makeAreaOfEffectCloud();
-//                    }
-//                    this.world.setEntityState(this, (byte) 3);
-//                    this.remove();
-//                }
-//                if (result.getType() == RayTraceResult.Type.ENTITY && this.ticksExisted < 10) {
-//                    return;
-//                }
-//                this.world.addParticle(ParticleTypes.EXPLOSION, this.getPosX(), this.getPosY(), this.getPosZ(), 1.0D, 0.0D, 0.0D);
-//                this.world.playSound(this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, false);
-//            }
-//
-//            private void makeAreaOfEffectCloud() {
-//
-//                AreaEffectCloudEntity cloud = new AreaEffectCloudEntity(world, getPosX(), getPosY(), getPosZ());
-//                cloud.setRadius(1);
-//                cloud.setParticleData(ParticleTypes.FLAME);
-//                cloud.setDuration(CLOUD_DURATION);
-//                cloud.setWaitTime(0);
-//                cloud.setRadiusPerTick((radius - cloud.getRadius()) / (float) cloud.getDuration());
-//
-//                world.addEntity(cloud);
-//            }
-//        };
-
-//        ENTITIES.register("updraft_grenade", () -> EntityType.Builder.<LightningGrenadeEntity>create(LightningGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_LIGHTNING_GRENADE));
 
         ENTITIES.register(ID_NUKE_GRENADE, () -> EntityType.Builder.<NukeGrenadeEntity>create(NukeGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_NUKE_GRENADE));
 

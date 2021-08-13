@@ -155,7 +155,7 @@ public class TCoreIDs {
     public static final String ID_BLITZ_PROJECTILE = "blitz_projectile";
     public static final String ID_BLIZZ_PROJECTILE = "blizz_projectile";
 
-    public static final String ID_EXPLOSIVE_GRENADE = "grenade";
+    public static final String ID_EXPLOSIVE_GRENADE = "explosive_grenade";
 
     public static final String ID_SLIME_GRENADE = "slime_grenade";
     public static final String ID_REDSTONE_GRENADE = "redstone_grenade";

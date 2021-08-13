@@ -3,7 +3,7 @@ package cofh.thermal.locomotion.entity;
 import cofh.lib.entity.AbstractTNTMinecartEntity;
 import cofh.lib.util.AreaUtils;
 import cofh.lib.util.Utils;
-import cofh.thermal.core.entity.projectile.LightningGrenadeEntity;
+//import cofh.thermal.core.entity.projectile.LightningGrenadeEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
@@ -51,7 +51,7 @@ public class LightningTNTMinecartEntity extends AbstractTNTMinecartEntity {
             if (this.world.canSeeSky(pos)) {
                 Utils.spawnLightningBolt(world, pos);
             }
-            LightningGrenadeEntity.shockNearbyEntities(this, world, this.getPosition(), radius);
+//            LightningGrenadeEntity.shockNearbyEntities(this, world, this.getPosition(), radius);
             AreaUtils.zapNearbyGround(this, world, this.getPosition(), radius, 0.05, 12);
             this.remove();
             this.entityDropItem(getCartItem());

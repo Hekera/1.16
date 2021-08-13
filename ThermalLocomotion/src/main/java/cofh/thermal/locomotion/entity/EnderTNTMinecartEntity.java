@@ -3,7 +3,7 @@ package cofh.thermal.locomotion.entity;
 import cofh.lib.entity.AbstractTNTMinecartEntity;
 import cofh.lib.util.AreaUtils;
 import cofh.lib.util.Utils;
-import cofh.thermal.core.entity.projectile.EnderGrenadeEntity;
+//import cofh.thermal.core.entity.projectile.EnderGrenadeEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EntityType;
@@ -47,7 +47,7 @@ public class EnderTNTMinecartEntity extends AbstractTNTMinecartEntity {
     protected void explode() {
 
         if (Utils.isServerWorld(world)) {
-            EnderGrenadeEntity.affectNearbyEntities(this, world, this.getPosition(), radius, null);
+//            EnderGrenadeEntity.affectNearbyEntities(this, world, this.getPosition(), radius, null);
             AreaUtils.transformEnderAir(this, world, this.getPosition(), radius);
             makeAreaOfEffectCloud();
             this.remove();

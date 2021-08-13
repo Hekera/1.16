@@ -2,23 +2,27 @@ package cofh.thermal.core.init;
 
 import cofh.core.item.*;
 import cofh.core.util.filter.FilterRegistry;
-import cofh.lib.entity.AbstractGrenadeEntity;
 import cofh.lib.item.ArmorMaterialCoFH;
+import cofh.lib.util.AreaUtils;
+import cofh.lib.util.Utils;
 import cofh.lib.util.constants.ToolTypes;
 import cofh.lib.util.helpers.AugmentDataHelper;
 import cofh.thermal.core.entity.item.*;
 import cofh.thermal.core.entity.projectile.*;
 import cofh.thermal.core.item.*;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Rarity;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.particles.IParticleData;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.util.math.RayTraceResult;
 
 import static cofh.lib.util.constants.Constants.FALSE;
 import static cofh.lib.util.constants.NBTTags.*;
@@ -54,19 +58,19 @@ public class TCoreItems {
 
         DetonatorItem.registerTNT(Blocks.TNT, TNTEntity::new);
 
-        DetonatorItem.registerTNT(BLOCKS.get(ID_SLIME_TNT), SlimeTNTEntity::new);
-        DetonatorItem.registerTNT(BLOCKS.get(ID_REDSTONE_TNT), RedstoneTNTEntity::new);
-        DetonatorItem.registerTNT(BLOCKS.get(ID_GLOWSTONE_TNT), GlowstoneTNTEntity::new);
-        DetonatorItem.registerTNT(BLOCKS.get(ID_ENDER_TNT), EnderTNTEntity::new);
-
-        DetonatorItem.registerTNT(BLOCKS.get(ID_PHYTO_TNT), PhytoTNTEntity::new);
-
-        DetonatorItem.registerTNT(BLOCKS.get(ID_FIRE_TNT), FireTNTEntity::new);
-        DetonatorItem.registerTNT(BLOCKS.get(ID_EARTH_TNT), EarthTNTEntity::new);
-        DetonatorItem.registerTNT(BLOCKS.get(ID_ICE_TNT), IceTNTEntity::new);
-        DetonatorItem.registerTNT(BLOCKS.get(ID_LIGHTNING_TNT), LightningTNTEntity::new);
-
-        DetonatorItem.registerTNT(BLOCKS.get(ID_NUKE_TNT), NukeTNTEntity::new);
+//        DetonatorItem.registerTNT(BLOCKS.get(ID_SLIME_TNT), SlimeTNTEntity::new);
+//        DetonatorItem.registerTNT(BLOCKS.get(ID_REDSTONE_TNT), RedstoneTNTEntity::new);
+//        DetonatorItem.registerTNT(BLOCKS.get(ID_GLOWSTONE_TNT), GlowstoneTNTEntity::new);
+//        DetonatorItem.registerTNT(BLOCKS.get(ID_ENDER_TNT), EnderTNTEntity::new);
+//
+//        DetonatorItem.registerTNT(BLOCKS.get(ID_PHYTO_TNT), PhytoTNTEntity::new);
+//
+//        DetonatorItem.registerTNT(BLOCKS.get(ID_FIRE_TNT), FireTNTEntity::new);
+//        DetonatorItem.registerTNT(BLOCKS.get(ID_EARTH_TNT), EarthTNTEntity::new);
+//        DetonatorItem.registerTNT(BLOCKS.get(ID_ICE_TNT), IceTNTEntity::new);
+//        DetonatorItem.registerTNT(BLOCKS.get(ID_LIGHTNING_TNT), LightningTNTEntity::new);
+//
+//        DetonatorItem.registerTNT(BLOCKS.get(ID_NUKE_TNT), NukeTNTEntity::new);
 
         ((DivingArmorItem) ITEMS.get(ID_DIVING_HELMET)).setup();
         ((DivingArmorItem) ITEMS.get(ID_DIVING_CHESTPLATE)).setup();
@@ -203,175 +207,160 @@ public class TCoreItems {
 
         registerItem("detonator", () -> new DetonatorItem(new Item.Properties().group(group)));
 
-        registerItem("explosive_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
+//        registerItem("explosive_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
+//
+//                return new ExplosiveGrenadeEntity(world, living);
+//            }
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
+//
+//                return new ExplosiveGrenadeEntity(world, posX, posY, posZ);
+//            }
+//
+//        }, new Item.Properties().group(group).maxStackSize(16)));
+//
+//        registerItem("slime_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
+//
+//                return new SlimeGrenadeEntity(world, living);
+//            }
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
+//
+//                return new SlimeGrenadeEntity(world, posX, posY, posZ);
+//            }
+//
+//        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
+//        registerItem("redstone_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
+//
+//                return new RedstoneGrenadeEntity(world, living);
+//            }
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
+//
+//                return new RedstoneGrenadeEntity(world, posX, posY, posZ);
+//            }
+//
+//        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
+
+
+        registerItem("glowstone_grenade", () -> new GrenadeItem(grenadeHelper(GLOWSTONE_GRENADE_ITEM, AreaUtils.glowLiving, AreaUtils.glowAirTransform, ParticleTypes.INSTANT_EFFECT), new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
+        registerItem("ender_grenade", () -> new GrenadeItem(grenadeHelper(ENDER_GRENADE_ITEM, AreaUtils.enderfereLiving, AreaUtils.enderAirTransform, ParticleTypes.PORTAL), new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
+
+//        registerItem("fire_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
+//
+//                return new FireGrenadeEntity(world, living);
+//            }
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
+//
+//                return new FireGrenadeEntity(world, posX, posY, posZ);
+//            }
+//
+//        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_ELEMENTAL_EXPLOSIVES)));
+//        registerItem("ice_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
+//
+//                return new IceGrenadeEntity(world, living);
+//            }
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
+//
+//                return new IceGrenadeEntity(world, posX, posY, posZ);
+//            }
+//
+//        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_ELEMENTAL_EXPLOSIVES)));
+//        registerItem("lightning_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
+//
+//                return new LightningGrenadeEntity(world, living);
+//            }
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
+//
+//                return new LightningGrenadeEntity(world, posX, posY, posZ);
+//            }
+//
+//        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_ELEMENTAL_EXPLOSIVES)));
+//
+//        registerItem("nuke_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
+//
+//                return new NukeGrenadeEntity(world, living);
+//            }
+//
+//            @Override
+//            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
+//
+//                return new NukeGrenadeEntity(world, posX, posY, posZ);
+//            }
+//
+//        }, new Item.Properties().group(group).rarity(Rarity.UNCOMMON).maxStackSize(16)).setShowInGroups(getFlag(FLAG_NUCLEAR_EXPLOSIVES)));
+    }
+
+    private static GrenadeItem.IGrenadeFactory grenadeHelper(Item defaultItem, AreaUtils.IEffectApplier effectApplier, AreaUtils.IBlockTransformer blockTransformer, IParticleData cloudParticle) {
+        return (world, x, y, z, living) -> new BaseGrenadeEntity(world, x, y, z, living) {
 
             @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
+            protected Item getDefaultItem() {
 
-                return new ExplosiveGrenadeEntity(world, living);
+                return defaultItem;
             }
 
             @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
+            protected void onImpact(RayTraceResult result) {
 
-                return new ExplosiveGrenadeEntity(world, posX, posY, posZ);
+                if (Utils.isServerWorld(world)) {
+                    if (!this.isInWater()) {
+                        effectApplier.applyEffectNearby(world, this.getPosition(), radius, effectDuration * 20, 0, func_234616_v_());
+                        blockTransformer.transformArea(this, world, this.getPosition(), radius);
+                        makeAreaOfEffectCloud();
+                    }
+                    this.world.setEntityState(this, (byte) 3);
+                    this.remove();
+                }
+                if (result.getType() == RayTraceResult.Type.ENTITY && this.ticksExisted < 10) {
+                    return;
+                }
+                this.world.addParticle(ParticleTypes.EXPLOSION, this.getPosX(), this.getPosY(), this.getPosZ(), 1.0D, 0.0D, 0.0D);
+                this.world.playSound(this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, false);
             }
 
-        }, new Item.Properties().group(group).maxStackSize(16)));
+            private void makeAreaOfEffectCloud() {
 
-        registerItem("slime_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
+                AreaEffectCloudEntity cloud = new AreaEffectCloudEntity(world, getPosX(), getPosY(), getPosZ());
+                cloud.setRadius(1);
+                cloud.setParticleData(cloudParticle);
+                cloud.setDuration(CLOUD_DURATION);
+                cloud.setWaitTime(0);
+                cloud.setRadiusPerTick((radius - cloud.getRadius()) / (float) cloud.getDuration());
 
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
-
-                return new SlimeGrenadeEntity(world, living);
+                world.addEntity(cloud);
             }
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
-
-                return new SlimeGrenadeEntity(world, posX, posY, posZ);
-            }
-
-        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
-        registerItem("redstone_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
-
-                return new RedstoneGrenadeEntity(world, living);
-            }
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
-
-                return new RedstoneGrenadeEntity(world, posX, posY, posZ);
-            }
-
-        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
-        registerItem("glowstone_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
-
-                return new GlowstoneGrenadeEntity(world, living);
-            }
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
-
-                return new GlowstoneGrenadeEntity(world, posX, posY, posZ);
-            }
-
-        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
-        registerItem("ender_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
-
-                return new EnderGrenadeEntity(world, living);
-            }
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
-
-                return new EnderGrenadeEntity(world, posX, posY, posZ);
-            }
-
-        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
-
-        registerItem("phyto_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
-
-                return new PhytoGrenadeEntity(world, living);
-            }
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
-
-                return new PhytoGrenadeEntity(world, posX, posY, posZ);
-            }
-
-        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_PHYTOGRO_EXPLOSIVES)));
-
-        registerItem("earth_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
-
-                return new EarthGrenadeEntity(world, living);
-            }
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
-
-                return new EarthGrenadeEntity(world, posX, posY, posZ);
-            }
-
-        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_ELEMENTAL_EXPLOSIVES)));
-        registerItem("fire_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
-
-                return new FireGrenadeEntity(world, living);
-            }
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
-
-                return new FireGrenadeEntity(world, posX, posY, posZ);
-            }
-
-        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_ELEMENTAL_EXPLOSIVES)));
-        registerItem("ice_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
-
-                return new IceGrenadeEntity(world, living);
-            }
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
-
-                return new IceGrenadeEntity(world, posX, posY, posZ);
-            }
-
-        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_ELEMENTAL_EXPLOSIVES)));
-        registerItem("lightning_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
-
-                return new LightningGrenadeEntity(world, living);
-            }
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
-
-                return new LightningGrenadeEntity(world, posX, posY, posZ);
-            }
-
-        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_ELEMENTAL_EXPLOSIVES)));
-
-        registerItem("nuke_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
-
-                return new NukeGrenadeEntity(world, living);
-            }
-
-            @Override
-            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
-
-                return new NukeGrenadeEntity(world, posX, posY, posZ);
-            }
-
-        }, new Item.Properties().group(group).rarity(Rarity.UNCOMMON).maxStackSize(16)).setShowInGroups(getFlag(FLAG_NUCLEAR_EXPLOSIVES)));
+        };
     }
 
     private static void registerArmor() {

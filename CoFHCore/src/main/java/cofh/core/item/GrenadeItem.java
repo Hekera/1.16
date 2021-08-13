@@ -13,6 +13,8 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 import static cofh.lib.util.helpers.ItemHelper.cloneStack;
 
 public class GrenadeItem extends ItemCoFH {
@@ -61,9 +63,17 @@ public class GrenadeItem extends ItemCoFH {
     // region FACTORY
     public interface IGrenadeFactory<T extends AbstractGrenadeEntity> {
 
-        T createGrenade(World world, LivingEntity living);
+        T createGrenade(World world, double posX, double posY, double posZ, @Nullable LivingEntity living);
 
-        T createGrenade(World world, double posX, double posY, double posZ);
+        default T createGrenade(World world, LivingEntity living) {
+
+            return createGrenade(world, living.getPosX(), living.getPosYEye() - 0.1, living.prevPosZ);
+        }
+
+        default T createGrenade(World world, double posX, double posY, double posZ) {
+
+            return createGrenade(world, posX, posY, posZ, null);
+        }
 
     }
     // endregion

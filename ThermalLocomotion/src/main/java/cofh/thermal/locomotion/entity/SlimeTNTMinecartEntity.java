@@ -2,7 +2,7 @@ package cofh.thermal.locomotion.entity;
 
 import cofh.lib.entity.AbstractTNTMinecartEntity;
 import cofh.lib.util.Utils;
-import cofh.thermal.core.entity.projectile.SlimeGrenadeEntity;
+//import cofh.thermal.core.entity.projectile.SlimeGrenadeEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EntityType;
@@ -46,7 +46,7 @@ public class SlimeTNTMinecartEntity extends AbstractTNTMinecartEntity {
     protected void explode() {
 
         if (Utils.isServerWorld(world)) {
-            SlimeGrenadeEntity.affectNearbyEntities(this, world, this.getPosition(), radius, null);
+//            SlimeGrenadeEntity.affectNearbyEntities(this, world, this.getPosition(), radius, null);
             makeAreaOfEffectCloud();
             this.remove();
             this.entityDropItem(getCartItem());

@@ -3,7 +3,7 @@ package cofh.thermal.locomotion.entity;
 import cofh.lib.entity.AbstractTNTMinecartEntity;
 import cofh.lib.util.AreaUtils;
 import cofh.lib.util.Utils;
-import cofh.thermal.core.entity.projectile.IceGrenadeEntity;
+//import cofh.thermal.core.entity.projectile.IceGrenadeEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EntityType;
@@ -49,7 +49,7 @@ public class IceTNTMinecartEntity extends AbstractTNTMinecartEntity {
     protected void explode() {
 
         if (Utils.isServerWorld(world)) {
-            IceGrenadeEntity.affectNearbyEntities(this, world, this.getPosition(), radius, null);
+//            IceGrenadeEntity.affectNearbyEntities(this, world, this.getPosition(), radius, null);
             AreaUtils.freezeSpecial(this, world, this.getPosition(), radius, true, true);
             AreaUtils.freezeNearbyGround(this, world, this.getPosition(), radius);
             AreaUtils.freezeAllWater(this, world, this.getPosition(), radius, permanentWater);

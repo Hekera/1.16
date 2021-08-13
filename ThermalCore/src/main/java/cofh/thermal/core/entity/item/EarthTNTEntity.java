@@ -4,6 +4,7 @@ import cofh.lib.entity.AbstractTNTEntity;
 import cofh.lib.util.Utils;
 import cofh.thermal.core.entity.projectile.EarthGrenadeEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particles.ParticleTypes;
@@ -32,7 +33,8 @@ public class EarthTNTEntity extends AbstractTNTEntity {
     @Override
     public Block getBlock() {
 
-        return BLOCKS.get(ID_EARTH_TNT);
+//        return BLOCKS.get(ID_EARTH_TNT);
+        return Blocks.DIRT;
     }
 
     @Override
