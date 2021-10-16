@@ -36,6 +36,9 @@ public class CoreReferences {
 
     @ObjectHolder(ID_LIGHTNING_AIR)
     public static final Block LIGHTNING_AIR = null;
+
+    @ObjectHolder(ID_SPECIAL_AIR)
+    public static final Block SPECIAL_AIR = null;
     // endregion
 
     // region CONTAINERS
@@ -70,6 +73,9 @@ public class CoreReferences {
     // endregion
 
     // region TILES
+    @ObjectHolder(ID_SPECIAL_AIR)
+    public static final TileEntityType<?> SPECIAL_AIR_TILE = null;
+
     @ObjectHolder(ID_SIGNAL_AIR)
     public static final TileEntityType<?> SIGNAL_AIR_TILE = null;
 

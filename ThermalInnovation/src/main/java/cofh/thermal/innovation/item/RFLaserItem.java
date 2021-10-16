@@ -54,6 +54,7 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
     protected static final float BASE_RANGE = 16.0F;
     protected static final int BASE_EFFECT_DURATION = 10;
     protected static final int BASE_ENERGY_PER_TICK = 100;
+    protected static final AreaUtils.Element NO_ELEMENT = new AreaUtils.Element("none", null, null);
 
     protected float blockProgress = 0.0F;
     protected BlockPos focusedBlock;
@@ -76,7 +77,7 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
     @Override
     protected void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltip.add(new TranslationTextComponent("info.cofh." + getElement(stack) + "_element"));
+        tooltip.add(new TranslationTextComponent("info.cofh." + getElement(stack).name + "_element"));
         if (getNumModes(stack) > 1) {
             addIncrementModeChangeTooltip(stack, worldIn, tooltip, flagIn);
         }
@@ -244,7 +245,7 @@ public class RFLaserItem extends EnergyContainerItemAugmentable implements IMult
                 }
             }
         }
-        return new AreaUtils.Element("none", null, null);
+        return NO_ELEMENT;
     }
 
     public void attackRanged(ItemStack stack, PlayerEntity player, Entity target, float distance, float damageMultiplier, boolean attackNearby) {

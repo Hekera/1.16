@@ -12,6 +12,7 @@ public class CoreIDs {
     public static final String ID_ATTR_STING_RESISTANCE = "sting_resistance";
 
     public static final String ID_GLOSSED_MAGMA = "glossed_magma";
+    public static final String ID_SPECIAL_AIR = "special_air";
     public static final String ID_SIGNAL_AIR = "signal_air";
     public static final String ID_GLOW_AIR = "glow_air";
     public static final String ID_ENDER_AIR = "ender_air";

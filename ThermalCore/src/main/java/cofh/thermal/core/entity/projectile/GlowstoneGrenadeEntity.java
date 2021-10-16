@@ -66,6 +66,11 @@ public class GlowstoneGrenadeEntity extends AbstractGrenadeEntity {
         }
         this.world.addParticle(ParticleTypes.EXPLOSION, this.getPosX(), this.getPosY(), this.getPosZ(), 1.0D, 0.0D, 0.0D);
         this.world.playSound(this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, false);
+
+        AirCleanerEntity cleaner = new AirCleanerEntity(this.world, effectDuration * 20, radius, "glow");
+        cleaner.copyLocationAndAnglesFrom(this);
+        world.addEntity(cleaner);
+        System.out.println("Spawned cleaner!");
     }
 
     private void makeAreaOfEffectCloud() {

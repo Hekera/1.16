@@ -5,12 +5,14 @@ import cofh.lib.entity.AbstractGrenadeEntity;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.dispenser.IPosition;
 import net.minecraft.dispenser.ProjectileDispenseBehavior;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -63,18 +65,9 @@ public class GrenadeItem extends ItemCoFH {
     // region FACTORY
     public interface IGrenadeFactory<T extends AbstractGrenadeEntity> {
 
-        T createGrenade(World world, double posX, double posY, double posZ, @Nullable LivingEntity living);
+        T createGrenade(World world, LivingEntity living);
 
-        default T createGrenade(World world, LivingEntity living) {
-
-            return createGrenade(world, living.getPosX(), living.getPosYEye() - 0.1, living.prevPosZ);
-        }
-
-        default T createGrenade(World world, double posX, double posY, double posZ) {
-
-            return createGrenade(world, posX, posY, posZ, null);
-        }
-
+        T createGrenade(World world, double posX, double posY, double posZ);
     }
     // endregion
 

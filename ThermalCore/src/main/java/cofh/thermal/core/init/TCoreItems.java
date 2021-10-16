@@ -2,6 +2,7 @@ package cofh.thermal.core.init;
 
 import cofh.core.item.*;
 import cofh.core.util.filter.FilterRegistry;
+import cofh.lib.entity.AbstractGrenadeEntity;
 import cofh.lib.item.ArmorMaterialCoFH;
 import cofh.lib.util.AreaUtils;
 import cofh.lib.util.Utils;
@@ -12,6 +13,7 @@ import cofh.thermal.core.entity.projectile.*;
 import cofh.thermal.core.item.*;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.AreaEffectCloudEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
@@ -23,6 +25,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
 
 import static cofh.lib.util.constants.Constants.FALSE;
 import static cofh.lib.util.constants.NBTTags.*;
@@ -254,9 +257,24 @@ public class TCoreItems {
 //
 //        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
 
+        registerItem("glowstone_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
 
-        registerItem("glowstone_grenade", () -> new GrenadeItem(grenadeHelper(GLOWSTONE_GRENADE_ITEM, AreaUtils.glowLiving, AreaUtils.glowAirTransform, ParticleTypes.INSTANT_EFFECT), new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
-        registerItem("ender_grenade", () -> new GrenadeItem(grenadeHelper(ENDER_GRENADE_ITEM, AreaUtils.enderfereLiving, AreaUtils.enderAirTransform, ParticleTypes.PORTAL), new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
+            @Override
+            public AbstractGrenadeEntity createGrenade(World world, LivingEntity living) {
+
+                return new GlowstoneGrenadeEntity(world, living);
+            }
+
+            @Override
+            public AbstractGrenadeEntity createGrenade(World world, double posX, double posY, double posZ) {
+
+                return new GlowstoneGrenadeEntity(world, posX, posY, posZ);
+            }
+
+        }, new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
+
+//        registerItem("glowstone_grenade", () -> new GrenadeItem(grenadeHelper(GLOWSTONE_GRENADE_ITEM, AreaUtils.glowLiving, AreaUtils.glowAirTransform, ParticleTypes.INSTANT_EFFECT), new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
+//        registerItem("ender_grenade", () -> new GrenadeItem(grenadeHelper(ENDER_GRENADE_ITEM, AreaUtils.enderfereLiving, AreaUtils.enderAirTransform, ParticleTypes.PORTAL), new Item.Properties().group(group).maxStackSize(16)).setShowInGroups(getFlag(FLAG_BASIC_EXPLOSIVES)));
 
 //        registerItem("fire_grenade", () -> new GrenadeItem(new GrenadeItem.IGrenadeFactory<AbstractGrenadeEntity>() {
 //
@@ -321,46 +339,48 @@ public class TCoreItems {
 //        }, new Item.Properties().group(group).rarity(Rarity.UNCOMMON).maxStackSize(16)).setShowInGroups(getFlag(FLAG_NUCLEAR_EXPLOSIVES)));
     }
 
-    private static GrenadeItem.IGrenadeFactory grenadeHelper(Item defaultItem, AreaUtils.IEffectApplier effectApplier, AreaUtils.IBlockTransformer blockTransformer, IParticleData cloudParticle) {
-        return (world, x, y, z, living) -> new BaseGrenadeEntity(world, x, y, z, living) {
+    public static GrenadeFactory grenadeHelper(Item defaultItem, String effectApplier, String blockTransformer, IParticleData cloudParticle) {
+        return new GrenadeFactory(effectApplier, blockTransformer);
 
-            @Override
-            protected Item getDefaultItem() {
-
-                return defaultItem;
-            }
-
-            @Override
-            protected void onImpact(RayTraceResult result) {
-
-                if (Utils.isServerWorld(world)) {
-                    if (!this.isInWater()) {
-                        effectApplier.applyEffectNearby(world, this.getPosition(), radius, effectDuration * 20, 0, func_234616_v_());
-                        blockTransformer.transformArea(this, world, this.getPosition(), radius);
-                        makeAreaOfEffectCloud();
-                    }
-                    this.world.setEntityState(this, (byte) 3);
-                    this.remove();
-                }
-                if (result.getType() == RayTraceResult.Type.ENTITY && this.ticksExisted < 10) {
-                    return;
-                }
-                this.world.addParticle(ParticleTypes.EXPLOSION, this.getPosX(), this.getPosY(), this.getPosZ(), 1.0D, 0.0D, 0.0D);
-                this.world.playSound(this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, false);
-            }
-
-            private void makeAreaOfEffectCloud() {
-
-                AreaEffectCloudEntity cloud = new AreaEffectCloudEntity(world, getPosX(), getPosY(), getPosZ());
-                cloud.setRadius(1);
-                cloud.setParticleData(cloudParticle);
-                cloud.setDuration(CLOUD_DURATION);
-                cloud.setWaitTime(0);
-                cloud.setRadiusPerTick((radius - cloud.getRadius()) / (float) cloud.getDuration());
-
-                world.addEntity(cloud);
-            }
-        };
+//                (world, x, y, z, living) -> new BaseGrenadeEntity(world, x, y, z, living) {
+//
+//            @Override
+//            protected Item getDefaultItem() {
+//
+//                return defaultItem;
+//            }
+//
+//            @Override
+//            protected void onImpact(RayTraceResult result) {
+//
+//                if (Utils.isServerWorld(world)) {
+//                    if (!this.isInWater()) {
+//                        effectApplier.applyEffectNearby(world, this.getPosition(), radius, effectDuration * 20, 0, func_234616_v_());
+//                        blockTransformer.transformArea(this, world, this.getPosition(), radius);
+//                        makeAreaOfEffectCloud();
+//                    }
+//                    this.world.setEntityState(this, (byte) 3);
+//                    this.remove();
+//                }
+//                if (result.getType() == RayTraceResult.Type.ENTITY && this.ticksExisted < 10) {
+//                    return;
+//                }
+//                this.world.addParticle(ParticleTypes.EXPLOSION, this.getPosX(), this.getPosY(), this.getPosZ(), 1.0D, 0.0D, 0.0D);
+//                this.world.playSound(this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, false);
+//            }
+//
+//            private void makeAreaOfEffectCloud() {
+//
+//                AreaEffectCloudEntity cloud = new AreaEffectCloudEntity(world, getPosX(), getPosY(), getPosZ());
+//                cloud.setRadius(1);
+//                cloud.setParticleData(cloudParticle);
+//                cloud.setDuration(CLOUD_DURATION);
+//                cloud.setWaitTime(0);
+//                cloud.setRadiusPerTick((radius - cloud.getRadius()) / (float) cloud.getDuration());
+//
+//                world.addEntity(cloud);
+//            }
+//        };
     }
 
     private static void registerArmor() {

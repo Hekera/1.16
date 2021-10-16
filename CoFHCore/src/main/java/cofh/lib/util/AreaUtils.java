@@ -1,6 +1,9 @@
 package cofh.lib.util;
 
+import cofh.core.block.nyi.SpecialAirBlock;
 import cofh.core.network.packet.client.PlayerMotionPacket;
+import cofh.core.tileentity.SpecialAirTile;
+import cofh.core.tileentity.SpecialAirTile.SpecialAirConfig;
 import cofh.lib.util.helpers.MathHelper;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.*;
@@ -12,10 +15,13 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.EndermiteEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -46,35 +52,6 @@ public class AreaUtils {
 
     // endregion EXPERIMENTAL
 
-    public static IEffectApplier noEffect = new IEffectApplier() {
-
-        @Override
-        public void applyEffect(LivingEntity target, int duration, int power, @Nullable Entity source) {return;}
-
-        @Override
-        public void applyEffectNearby(World worldIn, BlockPos pos, Predicate<? super LivingEntity> filter, int radius, int duration, int power, @Nullable Entity source) {return;}
-
-        @Override
-        public void applyEffectNearby(World worldIn, BlockPos pos, int radius, int duration, int power, @Nullable Entity source) {return;}
-
-        @Override
-        public void applyEffectNearby(World worldIn, BlockPos pos, int radius, int duration, int power) {return;}
-    };
-
-    public static final IBlockTransformer noTransform = new IBlockTransformer() {
-
-        @Override
-        public boolean transformBlock(Entity entity, World world, BlockPos pos, Direction face) {return false;}
-
-        @Override
-        public void transformArea(Entity entity, World world, BlockPos pos, float radius) {return;}
-
-        @Override
-        public void transformArea(Entity entity, World world, BlockPos pos, float radius, float chance) {return;}
-
-        @Override
-        public void transformArea(Entity entity, World world, BlockPos pos, float radius, float chance, int max) {return;}
-    };
 
 
     // region ELEMENTAL
@@ -216,10 +193,25 @@ public class AreaUtils {
 
     // endregion ELEMENTAL
 
+    // region GRENADE
+    public static final HashMap<String, SpecialAirConfig> airConfigs = new HashMap<>();
+
+    static {
+        putAirConfig("glow", (byte) 15, (byte) 0, chillLiving, ParticleTypes.INSTANT_EFFECT);
+        putAirConfig("signal", (byte) 7, (byte) 15, null, RedstoneParticleData.REDSTONE_DUST);
+    }
+
+    private static void putAirConfig(String name, byte light, byte power, @Nullable AreaUtils.IEffectApplier effect, IParticleData particle) {
+
+        airConfigs.put(name, new SpecialAirConfig(name, light, power, effect, particle));
+    }
+
+    // endregion GRENADE
+
     // region CONVERSION
 
     public static final IBlockTransformer signalAirTransform = getConversionTransform(REPLACEABLE_AIR, SIGNAL_AIR.getDefaultState(), false);
-    public static final IBlockTransformer glowAirTransform = getConversionTransform(REPLACEABLE_AIR, GLOW_AIR.getDefaultState(), false);
+    public static final IBlockTransformer glowAirTransform = getAirTransform(airConfigs.get("glow"));
     public static final IEffectApplier glowLiving = (target, duration, power, source) -> {
         target.addPotionEffect(new EffectInstance(Effects.GLOWING, duration, power));
         if (target.getCreatureAttribute() == CreatureAttribute.UNDEAD) {
@@ -379,6 +371,20 @@ public class AreaUtils {
             };
     }
 
+    private static IBlockTransformer getAirTransform(SpecialAirConfig config) {
+        return (entity, worldIn, pos, face) -> {
+            boolean succeeded = false;
+            if (REPLACEABLE_AIR.contains(worldIn.getBlockState(pos))) {
+                succeeded = worldIn.setBlockState(pos, SPECIAL_AIR.getDefaultState());
+                TileEntity tile = worldIn.getTileEntity(pos);
+                if (tile instanceof SpecialAirTile) {
+                    ((SpecialAirTile) tile).addConfig(config);
+                }
+            }
+            return succeeded;
+        };
+    }
+
     public static boolean isLitCampfire(BlockState state) {
 
         return state.getBlock() instanceof CampfireBlock && state.get(BlockStateProperties.LIT);
@@ -474,6 +480,18 @@ public class AreaUtils {
 
         public boolean isElement() {
             return effectApplier != null && blockTransformer != null;
+        }
+    }
+
+    public static class GrenadeConfig {
+        public final String name;
+        public final IEffectApplier effectApplier;
+        public final IBlockTransformer blockTransformer;
+
+        public GrenadeConfig(String name, IEffectApplier effectApplier, IBlockTransformer blockTransformer) {
+            this.name = name;
+            this.effectApplier = effectApplier;
+            this.blockTransformer = blockTransformer;
         }
     }
 

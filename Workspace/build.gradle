@@ -97,6 +97,10 @@ minecraft {
                 ThermalCore {
                     source project(':ThermalCore').sourceSets.main
                 }
+
+//                ThermalAtomics {
+//                    source project(':ThermalAtomics').sourceSets.main
+//                }
                 ThermalCultivation {
                     source project(':ThermalCultivation').sourceSets.main
                 }
@@ -151,6 +155,10 @@ minecraft {
                 ThermalCore {
                     source project(':ThermalCore').sourceSets.main
                 }
+
+//                ThermalAtomics {
+//                    source project(':ThermalAtomics').sourceSets.main
+//                }
                 ThermalCultivation {
                     source project(':ThermalCultivation').sourceSets.main
                 }
@@ -190,6 +198,8 @@ dependencies {
     compile project(':RedstoneArsenal')
 
     compile project(':ThermalCore')
+    
+//    compile project(':ThermalAtomics')
     compile project(':ThermalCultivation')
     compile project(':ThermalDynamics')
     compile project(':ThermalExpansion')

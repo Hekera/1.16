@@ -53,6 +53,8 @@ public class TCoreReferences {
     public static final EntityType<ExplosiveGrenadeEntity> EXPLOSIVE_GRENADE_ENTITY = null;
     @ObjectHolder("grenade")
     public static final EntityType<BaseGrenadeEntity> GRENADE_ENTITY = null;
+    @ObjectHolder("air_cleaner")
+    public static final EntityType<GlowstoneGrenadeEntity> AIR_CLEANER_ENTITY = null;
 
     @ObjectHolder(ID_SLIME_GRENADE)
     public static final EntityType<SlimeGrenadeEntity> SLIME_GRENADE_ENTITY = null;

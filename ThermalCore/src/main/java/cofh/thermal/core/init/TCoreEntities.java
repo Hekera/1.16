@@ -1,5 +1,6 @@
 package cofh.thermal.core.init;
 
+import cofh.lib.entity.AbstractGrenadeEntity;
 import cofh.thermal.core.entity.item.*;
 import cofh.thermal.core.entity.monster.BasalzEntity;
 import cofh.thermal.core.entity.monster.BlitzEntity;
@@ -37,8 +38,8 @@ public class TCoreEntities {
         ENTITIES.register(ID_GLOWSTONE_GRENADE, () -> EntityType.Builder.<GlowstoneGrenadeEntity>create(GlowstoneGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_GLOWSTONE_GRENADE));
         ENTITIES.register(ID_ENDER_GRENADE, () -> EntityType.Builder.<EnderGrenadeEntity>create(EnderGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_ENDER_GRENADE));
 
-
         ENTITIES.register("grenade", () -> EntityType.Builder.<BaseGrenadeEntity>create(BaseGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build("grenade"));
+        ENTITIES.register("air_cleaner", () -> EntityType.Builder.<AirCleanerEntity>create(AirCleanerEntity::new, EntityClassification.MISC).size(0.0F, 0.0F).build("air_cleaner"));
 
 
         ENTITIES.register(ID_PHYTO_GRENADE, () -> EntityType.Builder.<PhytoGrenadeEntity>create(PhytoGrenadeEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(ID_PHYTO_GRENADE));
